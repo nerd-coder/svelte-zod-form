@@ -3,9 +3,8 @@
     "allowJs": true,
     "checkJs": true,
     "forceConsistentCasingInFileNames": true,
-    "importsNotUsedAsValues": "error",
     "isolatedModules": true,
-    "preserveValueImports": true,
+    "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -18,12 +17,5 @@
       "$/*": ["./src/*"]
     }
   },
-  "include": [
-    "./src/**/*.js",
-    "./src/**/*.ts",
-    "./tests/**/*.js",
-    "./tests/**/*.ts",
-    "./tests/**/*.svelte"
-  ],
   "exclude": ["./node_modules/**"]
 }

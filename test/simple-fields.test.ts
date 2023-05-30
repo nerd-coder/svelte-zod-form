@@ -2,7 +2,7 @@ import { test, expect } from 'vitest'
 import { z } from 'zod'
 import { get } from 'svelte/store'
 
-import { ZodFormStore } from '../src/main'
+import { ZodFormStore } from '../main'
 
 test('should update vaule when changed', () => {
   const schema = z.object({ email: z.string() })

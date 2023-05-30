@@ -1,11 +1,11 @@
-# svelte-zod-Form
+# 🌵 Svelte Zod Form
 
-Building forms with breeze in Svelte
+Building forms with breeze, using Svelte + Zod
 
 ## Installation
 
 ```sh
-npm i @nerd-coder/svelte-zod-Form
+npm i @nerd-coder/svelte-zod-form
 ```
 
 ## How to use
@@ -41,7 +41,7 @@ const pass_error = form.fields.pass.error
 Fianlly, use it in html
 
 ```html
-<form>
+<form on:submit|preventDefault={form.triggerSubmit}>
   <fieldset>
     <input
       name='email'
@@ -61,5 +61,21 @@ Fianlly, use it in html
     />
     {#if $pass_error}<p>{$pass_error}<p>{/if}
   </fieldset>
+
+  <button type='submit'>Sign In</button>
 </form>
 ```
+
+## Features
+
+- Use Svelte native stores
+- Fast - only update what changed
+- Minimal - only __~1.22Kb__ in size (gzipped)
+- Build-in validation using Zod
+- Fully support Typescript
+
+## Extra
+
+Why the catus?
+
+\> For it resilience

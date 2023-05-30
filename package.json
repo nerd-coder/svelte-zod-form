@@ -1,11 +1,13 @@
 {
   "name": "@nerd-coder/svelte-zod-form",
   "version": "0.0.1",
-  "description": "",
+  "description": "Building forms with breeze, using Svelte + Zod",
   "packageManager": "pnpm@8.5.1",
-  "main": "src/main.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "type": "module",
   "scripts": {
+    "build": "rollup -c",
     "test": "vitest",
     "coverage": "vitest run --coverage"
   },
@@ -19,6 +21,14 @@
   "license": "MIT",
   "bugs": "https://github.com/nerd-coder/svelte-zod-form/issues",
   "homepage": "https://github.com/nerd-coder/svelte-zod-form#readme",
+  "prettier": {
+    "useTabs": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false,
+    "printWidth": 100,
+    "arrowParens": "avoid"
+  },
   "dependencies": {
     "radash": "^10.8.1",
     "svelte": "^3.59.1",
@@ -28,24 +38,14 @@
     "svelte": "^3.0.0",
     "zod": "^3.0.0"
   },
-  "prettier": {
-    "useTabs": false,
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "semi": false,
-    "printWidth": 100,
-    "arrowParens": "avoid"
-  },
-  "ava": {
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--loader=ts-node/esm",
-      "--experimental-specifier-resolution=node"
-    ]
-  },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.0.2",
+    "@rollup/plugin-typescript": "^11.1.1",
+    "rollup": "^3.23.0",
+    "rollup-plugin-filesize": "^10.0.0",
+    "rollup-plugin-sizes": "^1.0.5",
+    "tslib": "^2.5.2",
+    "typescript": "^5.0.4",
     "vitest": "^0.31.1"
   }
 }

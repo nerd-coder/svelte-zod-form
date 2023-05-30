@@ -1,18 +1,18 @@
 import { derived, get, writable, type Readable, type Writable, type Updater } from 'svelte/store'
 import { debounce, zip } from 'radash'
-import { z } from 'zod'
+import { ZodError, type z } from 'zod'
 
 const trurthly = (z: string) => !!z
 const toReadable = <T>(w: Writable<T>) => derived(w, a => a)
 
 const getErrorMessage = (e: unknown): string => {
-  if (e instanceof z.ZodError) return e.format()._errors.join(',')
+  if (e instanceof ZodError) return e.format()._errors.join(',')
   if (e instanceof Error) return e.message
   else if (typeof e === 'string') return e
   else return JSON.stringify(e)
 }
 
-interface ICreateFormOptions<T extends object> {
+interface ICreateFormOptions<T> {
   /**
    * The initial value of fields in the form.
    */
@@ -21,13 +21,13 @@ interface ICreateFormOptions<T extends object> {
   onSubmit?: (v: T) => Promise<void | string>
   /**
    * Debounce the value update (ms). Passing 0 to disable debounce
-   * @default 300
+   * @default 0
    */
   debounceDelay?: number
 }
 
-export class ZodFormStore<A extends object, O = A> {
-  readonly model: Readable<A>
+export class ZodFormStore<A extends z.ZodRawShape, O = A> {
+  readonly model: Readable<O>
 
   fields: { [K in keyof Required<A>]: ZodFieldStore<K, A> }
   triggerSubmit: () => void
@@ -35,7 +35,10 @@ export class ZodFormStore<A extends object, O = A> {
   errors: Readable<string[]>
   valid: Readable<boolean>
 
-  constructor(schema: z.ZodType<A, any, O>, options?: ICreateFormOptions<A>) {
+  constructor(
+    schema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
+    options?: ICreateFormOptions<O>
+  ) {
     const { initialValue, onSubmit, debounceDelay } = options || {}
 
     // Form stores
@@ -45,12 +48,12 @@ export class ZodFormStore<A extends object, O = A> {
     // Fields stores
     const fieldNames = getPropNames(schema)
     const fieldStores = fieldNames.map(
-      name => new ZodFieldStore(schema, name, initialValue?.[name], debounceDelay)
+      name => new ZodFieldStore(schema, name, initialValue?.[name as keyof O], debounceDelay)
     )
 
     const model = derived(
       fieldStores.map(z => z.value),
-      z => Object.fromEntries(zip(fieldNames, z)) as A
+      z => Object.fromEntries(zip(fieldNames, z)) as O
     )
     const fieldErrors = derived(
       fieldStores.map(z => z.error),
@@ -92,7 +95,7 @@ export class ZodFormStore<A extends object, O = A> {
   }
 }
 
-export class ZodFieldStore<K extends keyof A, A extends object, O = A> {
+export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
   name: K
   value: Readable<A[K]>
   touched: Readable<boolean>
@@ -104,7 +107,7 @@ export class ZodFieldStore<K extends keyof A, A extends object, O = A> {
   handleBlur: () => void
 
   constructor(
-    parentSchema: z.ZodType<A, any, O>,
+    parentSchema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
     name: K,
     initialValue: any = undefined,
     ms: number = 0
@@ -138,8 +141,11 @@ export class ZodFieldStore<K extends keyof A, A extends object, O = A> {
         if (e instanceof CustomEvent)
           if (typeof e.detail === 'object' && 'value' in e.detail) nextVal = e.detail.value
           else nextVal = e.detail
-        else if (e.target instanceof HTMLInputElement) nextVal = e.target.value as any
-        else if (e.target instanceof HTMLTextAreaElement) nextVal = e.target.value as any
+        else if (e.target instanceof HTMLInputElement)
+          if (e.target.type === 'checkbox') nextVal = e.target.checked
+          else nextVal = e.target.value
+        else if (e.target instanceof HTMLSelectElement) nextVal = e.target.value
+        else if (e.target instanceof HTMLTextAreaElement) nextVal = e.target.value
 
       try {
         nextVal = schema.parse(nextVal)
@@ -181,16 +187,15 @@ export class ZodFieldStore<K extends keyof A, A extends object, O = A> {
   }
 }
 
-function getChildSchema<K extends keyof A, A extends object, O = A>(
-  schema: z.ZodType<A, any, O>,
+function getChildSchema<K extends keyof A, A extends z.ZodRawShape, O = A>(
+  schema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
   prop: K
 ): z.ZodType {
-  if (schema instanceof z.ZodObject) return schema.shape[prop]
-
-  throw Error(`Unsupported schema "${String(prop)}"`)
+  return schema.shape[prop]
 }
 
-function getPropNames<A extends object, O = A>(schema: z.ZodType<A, any, O>): Array<keyof A> {
-  if (schema instanceof z.ZodObject) return Object.keys(schema.shape) as (keyof A)[]
-  return []
+function getPropNames<A extends z.ZodRawShape, O = A>(
+  schema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>
+): Array<keyof A> {
+  return Object.keys(schema.shape) as (keyof A)[]
 }
