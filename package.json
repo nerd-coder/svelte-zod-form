@@ -1,0 +1,51 @@
+{
+  "name": "@nerd-coder/svelte-zod-form",
+  "version": "0.0.1",
+  "description": "",
+  "packageManager": "pnpm@8.5.1",
+  "main": "src/main.ts",
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "repository": "github:nerd-coder/svelte-zod-form",
+  "keywords": [
+    "svelte",
+    "zod",
+    "form"
+  ],
+  "author": "Toanzzz",
+  "license": "MIT",
+  "bugs": "https://github.com/nerd-coder/svelte-zod-form/issues",
+  "homepage": "https://github.com/nerd-coder/svelte-zod-form#readme",
+  "dependencies": {
+    "radash": "^10.8.1",
+    "svelte": "^3.59.1",
+    "zod": "^3.21.4"
+  },
+  "peerDependencies": {
+    "svelte": "^3.0.0",
+    "zod": "^3.0.0"
+  },
+  "prettier": {
+    "useTabs": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "semi": false,
+    "printWidth": 100,
+    "arrowParens": "avoid"
+  },
+  "ava": {
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm",
+      "--experimental-specifier-resolution=node"
+    ]
+  },
+  "devDependencies": {
+    "vitest": "^0.31.1"
+  }
+}
