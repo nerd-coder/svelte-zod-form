@@ -12,10 +12,7 @@
     "strict": true,
     "moduleResolution": "node",
     "module": "esnext",
-    "target": "esnext",
-    "paths": {
-      "$/*": ["./src/*"]
-    }
+    "target": "esnext"
   },
-  "exclude": ["./node_modules/**"]
+  "exclude": ["./node_modules/**", "./dist/**"]
 }

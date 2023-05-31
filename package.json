@@ -8,6 +8,8 @@
   "type": "module",
   "scripts": {
     "build": "rollup -c",
+    "prettier": "prettier --ignore-path .gitignore --write",
+    "lint": "eslint .",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "release": "release-it"
@@ -30,7 +32,32 @@
     "printWidth": 100,
     "arrowParens": "avoid"
   },
+  "eslintConfig": {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "ignorePatterns": [
+      "/dist"
+    ],
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2020
+    }
+  },
   "release-it": {
+    "hooks": {
+      "before:init": [
+        "npm run lint",
+        "npm test"
+      ]
+    },
     "npm": {
       "publish": true,
       "publishArgs": [
@@ -50,6 +77,11 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@rollup/plugin-typescript": "^11.1.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "^2.8.8",
     "release-it": "^15.10.3",
     "rollup": "^3.23.0",
     "rollup-plugin-filesize": "^10.0.0",

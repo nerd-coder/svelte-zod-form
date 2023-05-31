@@ -86,7 +86,9 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       }
     }
 
-    this.fields = Object.fromEntries(fieldStores.map(z => [z.name, z])) as any
+    this.fields = Object.fromEntries(
+      fieldStores.map(z => [z.name, z])
+    ) as unknown as typeof this.fields
     this.triggerSubmit = triggerSubmit
     this.submitting = toReadable(submitting)
     this.errors = errors
@@ -109,27 +111,26 @@ export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
   constructor(
     parentSchema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
     name: K,
-    initialValue: any = undefined,
-    ms: number = 0
+    initialValue?: unknown,
+    ms = 0
   ) {
     const touched = writable(false)
     const dirty = writable(false)
     const error = writable('')
-    const schema = getChildSchema(parentSchema, name)
+    const schema = parentSchema.shape[name]
 
     const setError = ms > 0 ? debounce({ delay: ms }, error.set) : error.set
     const setTouched = ms > 0 ? debounce({ delay: ms }, touched.set) : touched.set
     const setDirty = ms > 0 ? debounce({ delay: ms }, dirty.set) : dirty.set
 
     const handleError = (e: unknown) => setError(getErrorMessage(e))
+    const value = writable<A[K]>()
 
     try {
-      initialValue = schema.parse(initialValue)
+      value.set(schema.parse(initialValue))
     } catch (e) {
       handleError(e)
     }
-
-    const value = writable<A[K]>(initialValue)
 
     const setValue = ms > 0 ? debounce({ delay: ms }, value.set) : value.set
     const updateValue = ms > 0 ? debounce({ delay: ms }, value.update) : value.update
@@ -153,7 +154,7 @@ export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
         handleError(e)
       }
 
-      setValue(nextVal as any)
+      setValue(nextVal as A[K])
       setTouched(true)
       setDirty(true)
     }
@@ -185,13 +186,6 @@ export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
     this.handleUpdate = handleUpdate
     this.handleBlur = handleBlur
   }
-}
-
-function getChildSchema<K extends keyof A, A extends z.ZodRawShape, O = A>(
-  schema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
-  prop: K
-): z.ZodType {
-  return schema.shape[prop]
 }
 
 function getPropNames<A extends z.ZodRawShape, O = A>(
