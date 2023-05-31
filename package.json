@@ -1,6 +1,6 @@
 {
   "name": "@nerd-coder/svelte-zod-form",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Building forms with breeze, using Svelte + Zod",
   "packageManager": "pnpm@8.5.1",
   "main": "dist/index.js",
@@ -29,6 +29,14 @@
     "semi": false,
     "printWidth": 100,
     "arrowParens": "avoid"
+  },
+  "release-it": {
+    "npm": {
+      "publish": true,
+      "publishArgs": [
+        "--access public"
+      ]
+    }
   },
   "dependencies": {
     "radash": "^10.8.1",
