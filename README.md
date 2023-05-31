@@ -92,4 +92,4 @@ Why the catus?
 ## TODO
 
 - More tests
-- Support `reset`
+- Support Array

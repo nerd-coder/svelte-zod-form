@@ -31,6 +31,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
 
   fields: { [K in keyof Required<A>]: ZodFieldStore<K, A> }
   triggerSubmit: () => void
+  reset: () => void
   submitting: Readable<boolean>
   errors: Readable<string[]>
   valid: Readable<boolean>
@@ -46,7 +47,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     const formError = writable<string>()
 
     // Fields stores
-    const fieldNames = getPropNames(schema)
+    const fieldNames = Object.keys(schema.shape)
     const fieldStores = fieldNames.map(
       name => new ZodFieldStore(schema, name, initialValue?.[name as keyof O], debounceDelay)
     )
@@ -85,11 +86,17 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
         submitting.set(false)
       }
     }
+    function handleReset() {
+      submitting.set(false)
+      formError.set('')
+      fieldStores.forEach(fs => fs.reset())
+    }
 
     this.fields = Object.fromEntries(
       fieldStores.map(z => [z.name, z])
     ) as unknown as typeof this.fields
     this.triggerSubmit = triggerSubmit
+    this.reset = handleReset
     this.submitting = toReadable(submitting)
     this.errors = errors
     this.model = model
@@ -102,11 +109,11 @@ export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
   value: Readable<A[K]>
   touched: Readable<boolean>
   dirty: Readable<boolean>
-  valid: Readable<boolean>
   error: Readable<string>
   handleUpdate: (updater: Updater<A[K]>) => void
   handleChange: (e: unknown) => void
   handleBlur: () => void
+  reset: () => void
 
   constructor(
     parentSchema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
@@ -114,23 +121,26 @@ export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
     initialValue?: unknown,
     ms = 0
   ) {
+    // Stores
     const touched = writable(false)
     const dirty = writable(false)
     const error = writable('')
-    const schema = parentSchema.shape[name]
+    const value = writable<A[K]>()
 
     const setError = ms > 0 ? debounce({ delay: ms }, error.set) : error.set
     const setTouched = ms > 0 ? debounce({ delay: ms }, touched.set) : touched.set
     const setDirty = ms > 0 ? debounce({ delay: ms }, dirty.set) : dirty.set
 
+    const schema = parentSchema.shape[name]
     const handleError = (e: unknown) => setError(getErrorMessage(e))
-    const value = writable<A[K]>()
-
     try {
-      value.set(schema.parse(initialValue))
+      initialValue = schema.parse(initialValue)
     } catch (e) {
       handleError(e)
     }
+    const resetValue = () => value.set(initialValue as A[K])
+
+    resetValue()
 
     const setValue = ms > 0 ? debounce({ delay: ms }, value.set) : value.set
     const updateValue = ms > 0 ? debounce({ delay: ms }, value.update) : value.update
@@ -175,21 +185,21 @@ export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
       setDirty(true)
     }
     const handleBlur = () => setTouched(true)
+    const handleReset = () => {
+      touched.set(false)
+      dirty.set(false)
+      error.set('')
+      resetValue()
+    }
 
     this.name = name
     this.value = toReadable(value)
     this.touched = toReadable(touched)
     this.dirty = toReadable(dirty)
-    this.valid = derived(error, e => !e)
     this.error = derived([error, touched], ([e, t]) => (t ? e : ''))
     this.handleChange = handleChange
     this.handleUpdate = handleUpdate
     this.handleBlur = handleBlur
+    this.reset = handleReset
   }
-}
-
-function getPropNames<A extends z.ZodRawShape, O = A>(
-  schema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>
-): Array<keyof A> {
-  return Object.keys(schema.shape) as (keyof A)[]
 }
