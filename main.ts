@@ -29,7 +29,7 @@ interface ICreateFormOptions<T> {
 export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   readonly model: Readable<O>
 
-  fields: { [K in keyof O]: ZodFieldStore<K, A, O> }
+  fields: { [K in keyof Required<O>]: ZodFieldStore<K, A, O> }
   triggerSubmit: () => void
   reset: () => void
   submitting: Readable<boolean>
