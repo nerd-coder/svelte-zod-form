@@ -49,7 +49,8 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     // Fields stores
     const fieldNames = Object.keys(schema.shape)
     const fieldStores = fieldNames.map(
-      name => new ZodFieldStore(schema, name, initialValue?.[name as keyof O], debounceDelay)
+      name =>
+        new ZodFieldStore(schema, name as keyof O, initialValue?.[name as keyof O], debounceDelay)
     )
 
     const model = derived(
@@ -104,13 +105,13 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   }
 }
 
-export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
+export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
   name: K
-  value: Readable<A[K]>
+  value: Readable<O[K]>
   touched: Readable<boolean>
   dirty: Readable<boolean>
   error: Readable<string>
-  handleUpdate: (updater: Updater<A[K]>) => void
+  handleUpdate: (updater: Updater<O[K]>) => void
   handleChange: (e: unknown) => void
   handleBlur: () => void
   reset: () => void
@@ -125,20 +126,20 @@ export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
     const touched = writable(false)
     const dirty = writable(false)
     const error = writable('')
-    const value = writable<A[K]>()
+    const value = writable<O[K]>()
 
     const setError = ms > 0 ? debounce({ delay: ms }, error.set) : error.set
     const setTouched = ms > 0 ? debounce({ delay: ms }, touched.set) : touched.set
     const setDirty = ms > 0 ? debounce({ delay: ms }, dirty.set) : dirty.set
 
-    const schema = parentSchema.shape[name]
+    const schema = parentSchema.shape[name as keyof A]
     const handleError = (e: unknown) => setError(getErrorMessage(e))
     try {
       initialValue = schema.parse(initialValue)
     } catch (e) {
       handleError(e)
     }
-    const resetValue = () => value.set(initialValue as A[K])
+    const resetValue = () => value.set(initialValue as O[K])
 
     resetValue()
 
@@ -164,11 +165,11 @@ export class ZodFieldStore<K extends keyof A, A extends z.ZodRawShape, O = A> {
         handleError(e)
       }
 
-      setValue(nextVal as A[K])
+      setValue(nextVal as O[K])
       setTouched(true)
       setDirty(true)
     }
-    const handleUpdate = (updater: Updater<A[K]>) => {
+    const handleUpdate = (updater: Updater<O[K]>) => {
       const safeUpdater: typeof updater = v => {
         setError('')
         const updatedVal = updater(v)
