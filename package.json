@@ -6,6 +6,9 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rollup -c",
     "prettier": "prettier --write .",
@@ -55,14 +58,12 @@
     "hooks": {
       "before:init": [
         "npm run lint",
-        "npm test"
+        "npm test -- --run",
+        "npm run build"
       ]
     },
     "npm": {
-      "publish": true,
-      "publishArgs": [
-        "--access public"
-      ]
+      "publish": true
     }
   },
   "dependencies": {
