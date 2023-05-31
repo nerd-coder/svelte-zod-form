@@ -1,6 +1,6 @@
 {
   "name": "@nerd-coder/svelte-zod-form",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Building forms with breeze, using Svelte + Zod",
   "packageManager": "pnpm@8.5.1",
   "main": "dist/index.js",
@@ -9,7 +9,8 @@
   "scripts": {
     "build": "rollup -c",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "release": "release-it"
   },
   "repository": "github:nerd-coder/svelte-zod-form",
   "keywords": [
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.2",
     "@rollup/plugin-typescript": "^11.1.1",
+    "release-it": "^15.10.3",
     "rollup": "^3.23.0",
     "rollup-plugin-filesize": "^10.0.0",
     "rollup-plugin-sizes": "^1.0.5",
