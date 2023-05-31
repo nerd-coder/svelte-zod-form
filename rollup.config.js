@@ -14,5 +14,5 @@ export default defineConfig({
     { file: pkg.main, format: 'cjs', sourcemap },
   ],
   external: ['svelte/store', 'zod'],
-  plugins: [typescript(), filesize(), nodeResolve()],
+  plugins: [typescript({ exclude: ['test/**'] }), filesize(), nodeResolve()],
 })
