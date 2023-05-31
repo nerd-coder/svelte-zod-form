@@ -16,5 +16,7 @@ jobs:
         with: { node-version-file: .node-version, cache: pnpm }
       - name: 👷 Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: 🔍 Run Lint
+        run: npm run lint
       - name: 🧪 Run tests
         run: npm test
