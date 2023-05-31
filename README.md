@@ -88,3 +88,8 @@ Full example: [Svelte REPL](https://svelte.dev/repl/33ff009d317745a389663c61ab22
 Why the catus?
 
 \> For it resilience
+
+## TODO
+
+- More tests
+- Support `reset`
