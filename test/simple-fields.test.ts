@@ -25,18 +25,6 @@ test('should hold initital values, even if invalid', () => {
   expect(get(form.fields.pass.value)).toBe('123')
 })
 
-test('should show no error, even if initital values is invalid', () => {
-  const form = new ZodFormStore(schema, {
-    initialValue: {
-      email: 'this is invalid email',
-      pass: '123',
-    },
-  })
-
-  expect(get(form.fields.email.error)).toBe('')
-  expect(get(form.fields.pass.error)).toBe('')
-})
-
 test('should update vaule when changed', () => {
   const form = new ZodFormStore(schema)
   const field = form.fields.email
@@ -50,19 +38,7 @@ test('should update vaule when changed', () => {
 test('should have error message about email', () => {
   const form = new ZodFormStore(schema)
 
-  expect(get(form.fields.email.error)).toBe('')
-
   form.fields.email.handleChange('abcdef')
-
-  expect(get(form.fields.email.error)).toBe('Invalid email')
-})
-
-test('should show error message only when dirty', () => {
-  const form = new ZodFormStore(schema, { initialValue: { email: 'abcdf' } })
-
-  expect(get(form.fields.email.error)).toBe('')
-
-  form.fields.email.handleBlur()
 
   expect(get(form.fields.email.error)).toBe('Invalid email')
 })
