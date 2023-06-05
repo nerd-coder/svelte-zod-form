@@ -197,7 +197,7 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
     this.value = toReadable(value)
     this.touched = toReadable(touched)
     this.dirty = toReadable(dirty)
-    this.error = derived([error, touched], ([e, t]) => (t ? e : ''))
+    this.error = toReadable(error)
     this.handleChange = handleChange
     this.handleUpdate = handleUpdate
     this.handleBlur = handleBlur
