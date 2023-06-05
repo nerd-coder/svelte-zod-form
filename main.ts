@@ -1,6 +1,6 @@
 import { derived, get, writable, type Readable, type Writable, type Updater } from 'svelte/store'
 import { debounce, zip } from 'radash'
-import { ZodError, type z } from 'zod'
+import { ZodEffects, ZodError, type z } from 'zod'
 
 const trurthly = (z: string) => !!z
 const toReadable = <T>(w: Writable<T>) => derived(w, a => a)
@@ -37,7 +37,9 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   dirty: Readable<boolean>
 
   constructor(
-    schema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
+    schema:
+      | z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>
+      | z.ZodEffects<z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>>,
     options?: ICreateFormOptions<O>
   ) {
     const { initialValue, onSubmit, debounceDelay } = options || {}
@@ -48,10 +50,17 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     const formError = writable<string>()
 
     // Fields stores
-    const fieldNames = Object.keys(schema.shape)
+    const fieldNames = Object.keys(
+      schema instanceof ZodEffects ? schema.innerType().shape : schema.shape
+    )
     const fieldStores = fieldNames.map(
       name =>
-        new ZodFieldStore(schema, name as keyof O, initialValue?.[name as keyof O], debounceDelay)
+        new ZodFieldStore(
+          schema instanceof ZodEffects ? schema.innerType() : schema,
+          name as keyof O,
+          initialValue?.[name as keyof O],
+          debounceDelay
+        )
     )
 
     const model = derived(
