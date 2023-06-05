@@ -6,7 +6,7 @@ const trurthly = (z: string) => !!z
 const toReadable = <T>(w: Writable<T>) => derived(w, a => a)
 
 const getErrorMessage = (e: unknown): string => {
-  if (e instanceof ZodError) return e.format()._errors.join(',')
+  if (e instanceof ZodError) return e.issues.map(a => a.message).join()
   if (e instanceof Error) return e.message
   else if (typeof e === 'string') return e
   else return JSON.stringify(e)
@@ -18,7 +18,7 @@ interface ICreateFormOptions<T> {
    */
   initialValue?: Partial<T>
   /** Should return nothing, or an error message */
-  onSubmit?: (v: T) => Promise<void | string>
+  onSubmit?: (v: T) => Promise<void | string> | void
   /**
    * Debounce the value update (ms). Passing 0 to disable debounce
    * @default 0
@@ -28,9 +28,10 @@ interface ICreateFormOptions<T> {
 
 export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   readonly model: Readable<O>
+  readonly options: ICreateFormOptions<O>
 
   fields: { [K in keyof Required<O>]: ZodFieldStore<K, A, O> }
-  triggerSubmit: () => void
+  triggerSubmit: () => Promise<void>
   reset: () => void
   submitting: Readable<boolean>
   errors: Readable<string[]>
@@ -42,7 +43,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       | z.ZodEffects<z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>>,
     options?: ICreateFormOptions<O>
   ) {
-    const { initialValue, onSubmit, debounceDelay } = options || {}
+    this.options = options || {}
 
     // Form stores
     const submitting = writable(false)
@@ -58,8 +59,8 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
         new ZodFieldStore(
           schema instanceof ZodEffects ? schema.innerType() : schema,
           name as keyof O,
-          initialValue?.[name as keyof O],
-          debounceDelay
+          this.options.initialValue?.[name as keyof O],
+          this.options.debounceDelay
         )
     )
 
@@ -77,7 +78,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
 
     const triggerSubmit = async () => {
       dirty.set(true)
-      if (!onSubmit) return
+      if (!this.options.onSubmit) return
       const _fieldErrors = get(fieldErrors)
       if (_fieldErrors.length > 0) {
         console.log('❗️ Please resolve field errors before submitting again', _fieldErrors)
@@ -88,7 +89,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       submitting.set(true)
       try {
         const values = schema.parse(get(model))
-        const result = await onSubmit(values)
+        const result = await this.options.onSubmit(values)
         if (result) formError.set(result)
       } catch (e) {
         console.log(`🚫 Form error`, e)

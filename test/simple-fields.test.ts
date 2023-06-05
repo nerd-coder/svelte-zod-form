@@ -1,10 +1,19 @@
-import { test, expect } from 'vitest'
+import { test, expect, vi } from 'vitest'
 import { z } from 'zod'
 import { get } from 'svelte/store'
 
 import { ZodFormStore } from '../main'
 
-const schema = z.object({ email: z.string().email(), pass: z.string().min(4) })
+const schema = z
+  .object({
+    email: z.string().email(),
+    pass: z.string().min(4),
+    pass_verify: z.string(),
+  })
+  .refine(({ pass, pass_verify }) => pass === pass_verify, {
+    message: 'Passwords does not match',
+    path: ['pass_verify'],
+  })
 
 test('should have undefined as initital values', () => {
   const form = new ZodFormStore(schema)
@@ -128,7 +137,6 @@ test('should not dirty if do other things', () => {
   expect(get(form.dirty)).toBe(false)
 })
 
-
 test('should not dirty after reset', () => {
   const form = new ZodFormStore(schema, {
     initialValue: {
@@ -140,4 +148,37 @@ test('should not dirty after reset', () => {
   expect(get(form.dirty)).toBe(true)
   form.reset()
   expect(get(form.dirty)).toBe(false)
+})
+
+test('should valid', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'abc@mail.com',
+      pass: '1234',
+      pass_verify: '1234',
+    },
+    onSubmit: async v => console.log('submitted', v),
+  })
+
+  const spy = vi.spyOn(form.options, 'onSubmit')
+
+  form.triggerSubmit()
+
+  expect(spy).toBeCalled()
+  expect(get(form.errors)).to.be.instanceOf(Array).and.lengthOf(0)
+})
+
+test('should show verify password error', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'abc@mail.com',
+      pass: '1234',
+      pass_verify: '12345',
+    },
+    onSubmit: async v => console.log('submitted', v),
+  })
+
+  form.triggerSubmit()
+
+  expect(get(form.errors)).to.be.instanceOf(Array).and.include('Passwords does not match')
 })
