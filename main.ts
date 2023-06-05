@@ -34,7 +34,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   reset: () => void
   submitting: Readable<boolean>
   errors: Readable<string[]>
-  valid: Readable<boolean>
+  dirty: Readable<boolean>
 
   constructor(
     schema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
@@ -44,6 +44,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
 
     // Form stores
     const submitting = writable(false)
+    const dirty = writable(false)
     const formError = writable<string>()
 
     // Fields stores
@@ -64,9 +65,9 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     const errors = derived([fieldErrors, formError], errors =>
       errors.flatMap(z => z).filter(trurthly)
     )
-    const valid = derived(errors, e => !e)
 
     const triggerSubmit = async () => {
+      dirty.set(true)
       if (!onSubmit) return
       const _fieldErrors = get(fieldErrors)
       if (_fieldErrors.length > 0) {
@@ -88,6 +89,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       }
     }
     function handleReset() {
+      dirty.set(false)
       submitting.set(false)
       formError.set('')
       fieldStores.forEach(fs => fs.reset())
@@ -99,9 +101,9 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     this.triggerSubmit = triggerSubmit
     this.reset = handleReset
     this.submitting = toReadable(submitting)
+    this.dirty = derived([dirty, ...fieldStores.map(a => a.dirty)], a => a.some(b => b))
     this.errors = errors
     this.model = model
-    this.valid = valid
   }
 }
 

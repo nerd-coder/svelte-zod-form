@@ -83,3 +83,61 @@ test('should reset to initial values', () => {
   expect(get(form.fields.email.value)).toBe('abc')
   expect(get(form.fields.pass.value)).toBe('123')
 })
+
+test('should start with no dirty ', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'abc',
+      pass: '123',
+    },
+  })
+  expect(get(form.dirty)).toBe(false)
+})
+
+test('should dirty after trying to submit ', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'abc',
+      pass: '123',
+    },
+  })
+  form.triggerSubmit()
+  expect(get(form.dirty)).toBe(true)
+})
+
+test('should dirty after setting any field', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'abc',
+      pass: '123',
+    },
+  })
+  form.fields.email.handleChange('abc')
+  expect(get(form.dirty)).toBe(true)
+})
+
+test('should not dirty if do other things', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'abc',
+      pass: '123',
+    },
+  })
+  form.fields.email.handleBlur()
+
+  expect(get(form.dirty)).toBe(false)
+})
+
+
+test('should not dirty after reset', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'abc',
+      pass: '123',
+    },
+  })
+  form.fields.email.handleChange('abc')
+  expect(get(form.dirty)).toBe(true)
+  form.reset()
+  expect(get(form.dirty)).toBe(false)
+})
