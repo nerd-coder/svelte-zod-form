@@ -180,5 +180,7 @@ test('should show verify password error', () => {
 
   form.triggerSubmit()
 
+  expect(get(form.fields.pass_verify.error)).toBe('Passwords does not match')
   expect(get(form.errors)).to.be.instanceOf(Array).and.include('Passwords does not match')
+  expect(get(form.error)).toBe('')
 })

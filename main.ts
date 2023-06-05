@@ -6,7 +6,11 @@ const trurthly = (z: string) => !!z
 const toReadable = <T>(w: Writable<T>) => derived(w, a => a)
 
 const getErrorMessage = (e: unknown): string => {
-  if (e instanceof ZodError) return e.issues.map(a => a.message).join()
+  if (e instanceof ZodError)
+    return e.issues
+      .filter(a => a.path.length === 0) // Only take error from root
+      .map(a => a.message)
+      .join()
   if (e instanceof Error) return e.message
   else if (typeof e === 'string') return e
   else return JSON.stringify(e)
@@ -18,7 +22,7 @@ interface ICreateFormOptions<T> {
    */
   initialValue?: Partial<T>
   /** Should return nothing, or an error message */
-  onSubmit?: (v: T) => Promise<void | string> | void
+  onSubmit?: (v: T) => Promise<void | string> | string | void
   /**
    * Debounce the value update (ms). Passing 0 to disable debounce
    * @default 0
@@ -35,6 +39,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   reset: () => void
   submitting: Readable<boolean>
   errors: Readable<string[]>
+  error: Readable<string>
   dirty: Readable<boolean>
 
   constructor(
@@ -72,9 +77,6 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       fieldStores.map(z => z.error),
       e => e.filter(trurthly)
     )
-    const errors = derived([fieldErrors, formError], errors =>
-      errors.flatMap(z => z).filter(trurthly)
-    )
 
     const triggerSubmit = async () => {
       dirty.set(true)
@@ -93,6 +95,10 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
         if (result) formError.set(result)
       } catch (e) {
         console.log(`🚫 Form error`, e)
+        // Set Error back to field
+        if (e instanceof ZodError)
+          for (const issue of e.issues) this.setError(issue.message, issue.path)
+
         formError.set(getErrorMessage(e))
       } finally {
         submitting.set(false)
@@ -111,9 +117,19 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     this.triggerSubmit = triggerSubmit
     this.reset = handleReset
     this.submitting = toReadable(submitting)
+    this.error = toReadable(formError)
     this.dirty = derived([dirty, ...fieldStores.map(a => a.dirty)], a => a.some(b => b))
-    this.errors = errors
+    this.errors = derived([fieldErrors, formError], errors =>
+      errors.flatMap(z => z).filter(trurthly)
+    )
     this.model = model
+  }
+
+  setError(errorMessage: string, path: (string | number)[]) {
+    const [currentPath] = path
+    const field = this.fields[currentPath as keyof O]
+    if (!field) return
+    field.setError(errorMessage)
   }
 }
 
@@ -127,6 +143,7 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
   handleChange: (e: unknown) => void
   handleBlur: () => void
   reset: () => void
+  setError: (e: string) => void
 
   constructor(
     parentSchema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
@@ -214,5 +231,6 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
     this.handleUpdate = handleUpdate
     this.handleBlur = handleBlur
     this.reset = handleReset
+    this.setError = setError
   }
 }
