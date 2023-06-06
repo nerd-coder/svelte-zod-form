@@ -8,7 +8,7 @@ import pkg from './package.json' assert { type: 'json' }
 const sourcemap = true
 
 export default defineConfig({
-  input: './main.ts',
+  input: './src/index.ts',
   output: [
     { file: pkg.module, format: 'es', sourcemap },
     { file: pkg.main, format: 'cjs', sourcemap },

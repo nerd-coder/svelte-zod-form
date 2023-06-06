@@ -2,7 +2,7 @@ import { test, expect, vi } from 'vitest'
 import { z } from 'zod'
 import { get } from 'svelte/store'
 
-import { ZodFormStore } from '../main'
+import { ZodFormStore } from '../src'
 
 const schema = z
   .object({
