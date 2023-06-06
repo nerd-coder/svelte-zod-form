@@ -184,3 +184,21 @@ test('should show verify password error', () => {
   expect(get(form.errors)).to.be.instanceOf(Array).and.include('Passwords does not match')
   expect(get(form.error)).toBe('')
 })
+
+test('should show error throwed in onSubmit handler', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'abc@mail.com',
+      pass: '12345',
+      pass_verify: '12345',
+    },
+    onSubmit: () => {
+      throw new Error('failed')
+    },
+  })
+
+  form.triggerSubmit()
+
+  expect(get(form.errors)).to.be.instanceOf(Array).and.include('failed')
+  expect(get(form.error)).toBe('failed')
+})

@@ -11,6 +11,8 @@ export const getErrorMessage = (e: unknown): string => {
       .map(a => a.message)
       .join()
   if (e instanceof Error) return e.message
-  else if (typeof e === 'string') return e
-  else return JSON.stringify(e)
+  if (typeof e === 'string') return e
+  if (typeof e === 'undefined') return ''
+  if (e === null) return ''
+  return JSON.stringify(e)
 }

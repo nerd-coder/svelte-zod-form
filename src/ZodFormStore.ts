@@ -5,6 +5,9 @@ import { ZodEffects, ZodError, type z } from 'zod'
 import { ZodFieldStore } from './ZodFieldStore'
 import { getErrorMessage, toReadable, trurthly } from './utils'
 
+/**
+ * Settings for ZodFormStore
+ */
 interface ICreateFormOptions<T> {
   /**
    * The initial value of fields in the form.
@@ -19,22 +22,59 @@ interface ICreateFormOptions<T> {
   debounceDelay?: number
 }
 
+/**
+ * Instance that hold all our form's state, as Svelte's Store
+ */
 export class ZodFormStore<A extends z.ZodRawShape, O = A> {
+  /** Form's data. Will be passed to onSubmit handler */
   readonly model: Readable<O>
+  /** Form settings. Should not be update */
   readonly options: ICreateFormOptions<O>
 
+  /** Generated fields's stores */
   fields: { [K in keyof Required<O>]: ZodFieldStore<K, A, O> }
+  /**
+   * Function to start parsing, validating and submit the form's data.
+   *
+   * Should assign to form's submit event or submit button.
+   *
+   * ```svelte
+   * <form on:submit={form.triggerSubmit}>
+   *  ...
+   * </form>
+   * ```
+   */
   triggerSubmit: () => Promise<void>
+  /**
+   * Function to reset the form to original state.
+   *
+   * Should assign to form's `reset` event, reset button, or call directly.
+   *
+   * ```svelte
+   * <form on:reset={form.reset}>
+   *  ...
+   * </form>
+   * ```
+   */
   reset: () => void
+  /** Indicate if the form is being submitted (`onSubmit` handler is resolving).  */
   submitting: Readable<boolean>
+  /**
+   * Array of string contains all error messages
+   * (including fields's errors and error return from `onSubmit` handler).
+   */
   errors: Readable<string[]>
+  /** Error message returned from `onSubmit` handler, or custom validation message. */
   error: Readable<string>
+  /** Indicate if the form is edited or submitted. */
   dirty: Readable<boolean>
 
   constructor(
+    /** Zod's schema for data in the form. Should be a `ZodObject`. */
     schema:
       | z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>
       | z.ZodEffects<z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>>,
+    /** Additional configuration */
     options?: ICreateFormOptions<O>
   ) {
     this.options = options || {}
@@ -114,6 +154,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     this.model = model
   }
 
+  /** Set the form's error message manually */
   setError(errorMessage: string, path: (string | number)[]) {
     const [currentPath] = path
     const field = this.fields[currentPath as keyof O]
