@@ -202,3 +202,68 @@ test('should show error throwed in onSubmit handler', () => {
   expect(get(form.errors)).to.be.instanceOf(Array).and.include('failed')
   expect(get(form.error)).toBe('failed')
 })
+
+test('should not trigger onSubmit handler if there is any field error(s)', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: '-----',
+      pass: '1234',
+      pass_verify: '1234',
+    },
+    onSubmit: async v => console.log('submitted', v),
+  })
+
+  const spy = vi.spyOn(form.options, 'onSubmit')
+
+  form.triggerSubmit()
+
+  expect(spy).not.toBeCalled()
+  expect(get(form.fields.email.error)).toBe('Invalid email')
+})
+
+test('should do nothing if setting the wrong field', () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'me@mail.com',
+      pass: '1234',
+      pass_verify: '1234',
+    },
+    onSubmit: async v => console.log('submitted', v),
+  })
+
+  form.setError('failed', ['abc'])
+
+  expect(get(form.errors)).to.be.instanceOf(Array).and.lengthOf(0)
+})
+
+test('should have error returned from `onSubmit` handler', async () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'me@mail.com',
+      pass: '1234',
+      pass_verify: '1234',
+    },
+    onSubmit: () => 'submitted failed',
+  })
+
+  await form.triggerSubmit()
+
+  expect(get(form.error)).toBe('submitted failed')
+  expect(get(form.errors)).to.be.instanceOf(Array).and.include('submitted failed')
+})
+
+test('should have error returned from `onSubmit` handler (async)', async () => {
+  const form = new ZodFormStore(schema, {
+    initialValue: {
+      email: 'me@mail.com',
+      pass: '1234',
+      pass_verify: '1234',
+    },
+    onSubmit: async () => 'submitted failed',
+  })
+
+  await form.triggerSubmit()
+
+  expect(get(form.error)).toBe('submitted failed')
+  expect(get(form.errors)).to.be.instanceOf(Array).and.include('submitted failed')
+})
