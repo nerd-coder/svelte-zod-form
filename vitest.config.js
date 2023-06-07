@@ -9,5 +9,6 @@ export default defineConfig({
       functions: 60,
       statements: 60,
     },
+    globals: true,
   },
 })

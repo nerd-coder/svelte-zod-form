@@ -4,3 +4,4 @@ dist/
 coverage/
 
 .rollup.cache/
+tsconfig.tsbuildinfo
