@@ -22,6 +22,8 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
     initialValue?: unknown,
     ms = 0
   ) {
+    if (!(name in parentSchema.shape)) throw new Error('Invalid field name')
+
     // Stores
     const touched = writable(false)
     const dirty = writable(false)
