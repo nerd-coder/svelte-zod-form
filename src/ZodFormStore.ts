@@ -1,6 +1,7 @@
 import { derived, get, writable, type Readable } from 'svelte/store'
 import { zip } from 'radash'
 import { ZodEffects, ZodError, type z } from 'zod'
+import { debounce } from 'radash'
 
 import { ZodFieldStore } from './ZodFieldStore'
 import { getErrorMessage, toReadable, trurthly } from './utils'
@@ -15,6 +16,13 @@ interface ICreateFormOptions<T> {
   initialValue?: Partial<T>
   /** Should return nothing, or an error message */
   onSubmit?: (v: T) => Promise<void | string> | string | void
+  /**
+   * Auto trigger submit when any data changed, after the delay in `ms`.
+   * Passing `0` or `undefined` to disabled.
+   *
+   * @default undefined
+   */
+  autoSubmitAfter?: number
   /**
    * Debounce the value update (ms). Passing 0 to disable debounce
    * @default 0
@@ -138,6 +146,21 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       submitting.set(false)
       formError.set('')
       fieldStores.forEach(fs => fs.reset())
+    }
+
+    if (this.options.autoSubmitAfter && this.options.autoSubmitAfter > 0) {
+      const debouncedTriggerSubmit = debounce(
+        { delay: this.options.autoSubmitAfter },
+        triggerSubmit
+      )
+      let prevModel = get(model)
+      model.subscribe(nextModel => {
+        if (prevModel === nextModel) return
+
+        prevModel = nextModel
+        console.debug('⏱️ Model changed', nextModel)
+        debouncedTriggerSubmit()
+      })
     }
 
     this.fields = Object.fromEntries(
