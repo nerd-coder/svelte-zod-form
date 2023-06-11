@@ -3,8 +3,8 @@ import { zip } from 'radash'
 import { ZodEffects, ZodError, type z } from 'zod'
 import { debounce } from 'radash'
 
-import { ZodFieldStore } from './ZodFieldStore'
-import { getErrorMessage, toReadable, trurthly } from './utils'
+import { ZodFieldStore } from './ZodFieldStore.js'
+import { getErrorMessage, toReadable, trurthly } from './utils.js'
 
 /**
  * Settings for ZodFormStore
@@ -28,6 +28,8 @@ interface ICreateFormOptions<T> {
    * @default 0
    */
   debounceDelay?: number
+  /** Print debug messages */
+  debug?: boolean
 }
 
 /**
@@ -76,6 +78,8 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   error: Readable<string>
   /** Indicate if the form is edited or submitted. */
   dirty: Readable<boolean>
+  /** Indicate if the form is valid. */
+  valid: Readable<boolean>
 
   constructor(
     /** Zod's schema for data in the form. Should be a `ZodObject`. */
@@ -97,7 +101,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       schema instanceof ZodEffects ? schema.innerType().shape : schema.shape
     )
     const fieldStores = fieldNames.map(
-      name =>
+      (name) =>
         new ZodFieldStore(
           schema instanceof ZodEffects ? schema.innerType() : schema,
           name as keyof O,
@@ -107,20 +111,23 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     )
 
     const model = derived(
-      fieldStores.map(z => z.value),
-      z => Object.fromEntries(zip(fieldNames, z)) as O
+      fieldStores.map((z) => z.value),
+      (z) => Object.fromEntries(zip(fieldNames, z)) as O
     )
     const fieldErrors = derived(
-      fieldStores.map(z => z.error),
-      e => e.filter(trurthly)
+      fieldStores.map((z) => z.error),
+      (e) => e.filter(trurthly)
     )
 
     const triggerSubmit = async () => {
       dirty.set(true)
+      fieldStores.forEach((f) => f.setTouched(true))
+
       if (!this.options.onSubmit) return
+
       const _fieldErrors = get(fieldErrors)
       if (_fieldErrors.length > 0) {
-        console.log('❗️ Please resolve field errors before submitting again', _fieldErrors)
+        if (this.options.debug) console.debug('❗️ Form not valid', _fieldErrors)
         return
       }
 
@@ -131,7 +138,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
         const result = await this.options.onSubmit(values)
         if (result) formError.set(result)
       } catch (e) {
-        console.log(`🚫 Form error`, e)
+        if (this.options.debug) console.debug(`🚫 Form submit error`, e)
         // Set Error back to field
         if (e instanceof ZodError)
           for (const issue of e.issues) this.setError(issue.message, issue.path)
@@ -145,36 +152,40 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       dirty.set(false)
       submitting.set(false)
       formError.set('')
-      fieldStores.forEach(fs => fs.reset())
+      fieldStores.forEach((f) => f.reset())
     }
 
     if (this.options.autoSubmitAfter && this.options.autoSubmitAfter > 0) {
-      const debouncedTriggerSubmit = debounce(
-        { delay: this.options.autoSubmitAfter },
-        triggerSubmit
-      )
-      let prevModel = get(model)
-      model.subscribe(nextModel => {
+      const debouncedTriggerSubmit = debounce({ delay: this.options.autoSubmitAfter }, () => {
+        if (this.options.debug) console.debug('⏱️ Auto submitting...')
+        triggerSubmit()
+      })
+      let prevModel: O | null = null
+      model.subscribe((nextModel) => {
+        if (prevModel === null) {
+          prevModel = nextModel
+          return
+        }
         if (prevModel === nextModel) return
 
         prevModel = nextModel
-        console.debug('⏱️ Model changed', nextModel)
         debouncedTriggerSubmit()
       })
     }
 
     this.fields = Object.fromEntries(
-      fieldStores.map(z => [z.name, z])
+      fieldStores.map((z) => [z.name, z])
     ) as unknown as typeof this.fields
     this.triggerSubmit = triggerSubmit
     this.reset = handleReset
     this.submitting = toReadable(submitting)
     this.error = toReadable(formError)
-    this.dirty = derived([dirty, ...fieldStores.map(a => a.dirty)], a => a.some(b => b))
-    this.errors = derived([fieldErrors, formError], errors =>
-      errors.flatMap(z => z).filter(trurthly)
+    this.dirty = derived([dirty, ...fieldStores.map((a) => a.dirty)], (a) => a.some((b) => b))
+    this.errors = derived([fieldErrors, formError], (errors) =>
+      errors.flatMap((z) => z).filter(trurthly)
     )
     this.model = model
+    this.valid = derived(this.errors, (e) => !e.length)
   }
 
   /** Set the form's error message manually */

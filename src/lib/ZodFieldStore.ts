@@ -1,8 +1,8 @@
-import { writable, type Readable, type Updater } from 'svelte/store'
+import { writable, type Readable, type Updater, derived } from 'svelte/store'
 import { debounce } from 'radash'
-import { type z } from 'zod'
+import type { z } from 'zod'
 
-import { getErrorMessage, toReadable } from './utils'
+import { getErrorMessage, toReadable } from './utils.js'
 
 export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
   name: K
@@ -10,11 +10,13 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
   touched: Readable<boolean>
   dirty: Readable<boolean>
   error: Readable<string>
+  valid: Readable<boolean>
   handleUpdate: (updater: Updater<O[K]>) => void
   handleChange: (e: unknown) => void
   handleBlur: () => void
   reset: () => void
   setError: (e: string) => void
+  setTouched: (v: boolean) => void
 
   constructor(
     parentSchema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
@@ -72,7 +74,7 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
       setDirty(true)
     }
     const handleUpdate = (updater: Updater<O[K]>) => {
-      const safeUpdater: typeof updater = v => {
+      const safeUpdater: typeof updater = (v) => {
         setError('')
         const updatedVal = updater(v)
         if (schema)
@@ -100,10 +102,12 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
     this.touched = toReadable(touched)
     this.dirty = toReadable(dirty)
     this.error = toReadable(error)
+    this.valid = derived(error, (e) => !e)
     this.handleChange = handleChange
     this.handleUpdate = handleUpdate
     this.handleBlur = handleBlur
     this.reset = handleReset
     this.setError = setError
+    this.setTouched = setTouched
   }
 }

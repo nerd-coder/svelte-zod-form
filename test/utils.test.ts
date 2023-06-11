@@ -1,5 +1,5 @@
 import { ZodError } from 'zod'
-import { getErrorMessage } from '../src/utils'
+import { getErrorMessage } from '../src/lib/utils'
 
 // Positive test case
 test('Positive: getErrorMessage returns string for valid input', () => {

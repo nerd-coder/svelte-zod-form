@@ -8,11 +8,15 @@ import pkg from './package.json' assert { type: 'json' }
 const sourcemap = true
 
 export default defineConfig({
-  input: './src/index.ts',
+  input: './src/lib/index.ts',
   output: [
     { file: pkg.module, format: 'esm', sourcemap },
     { file: pkg.main, format: 'cjs', sourcemap },
   ],
   external: ['svelte/store', 'zod'],
-  plugins: [typescript({ exclude: ['test/**'] }), filesize(), nodeResolve()],
+  plugins: [
+    typescript({ include: ['src/lib/**'], declaration: true, declarationDir: 'dist' }),
+    filesize(),
+    nodeResolve(),
+  ],
 })

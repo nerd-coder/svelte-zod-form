@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { get } from 'svelte/store'
-import { ZodFieldStore } from '../src/ZodFieldStore'
+import { ZodFieldStore } from '../src/lib/ZodFieldStore'
 import { polyfillDOM } from './test-utils'
 
 describe('ZodFieldStore_class', () => {
