@@ -10,7 +10,7 @@ const sourcemap = true
 export default defineConfig({
   input: './src/index.ts',
   output: [
-    { file: pkg.module, format: 'es', sourcemap },
+    { file: pkg.module, format: 'esm', sourcemap },
     { file: pkg.main, format: 'cjs', sourcemap },
   ],
   external: ['svelte/store', 'zod'],

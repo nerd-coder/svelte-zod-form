@@ -3,7 +3,7 @@
   "version": "0.0.15",
   "description": "Building forms with breeze, using Svelte + Zod",
   "packageManager": "pnpm@8.5.1",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "type": "module",
