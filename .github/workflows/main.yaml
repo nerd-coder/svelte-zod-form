@@ -18,6 +18,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: 🔍 Run Lint
         run: npm run lint
+      - name: 🔍 Run Check
+        run: npm run check
       - name: 🧪 Run tests
         run: npm run coverage
       - name: 📖 Coverage Report
