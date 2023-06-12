@@ -58,17 +58,17 @@
     {#if $pass_error && $pass_touched}<p>{$pass_error}</p>{/if}
   </fieldset>
 
-  <button type="submit" disabled={!$valid || $submitting}>Submit</button>
+  <button type="submit" disabled={!$valid || $submitting}>
+    {$submitting ? 'Submiting...' : 'Submit'}
+  </button>
   <button type="reset">Reset</button>
+</form>
 
-  <fieldset>
-    <pre>
+<pre>
 valid: {$valid}
 submitting: {$submitting}
 model: {JSON.stringify($model, null, 2)}
-    </pre>
-  </fieldset>
-</form>
+</pre>
 
 <style>
   fieldset {
@@ -96,5 +96,14 @@ model: {JSON.stringify($model, null, 2)}
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 2px;
+  }
+
+  pre {
+    margin: 12px 0;
+    padding: 8px;
+    background-color: whitesmoke;
+    color: darkgray;
+    border-radius: 4px;
+    font-size: small;
   }
 </style>
