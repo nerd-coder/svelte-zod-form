@@ -17,15 +17,21 @@
 
   // We need pull the generated field store out, in order
   // to use the Svelte's "auto subscription" feature "$"
-  const email_value = form.fields.email.value
-  const email_error = form.fields.email.error
-  const email_valid = form.fields.email.valid
-  const email_dirty = form.fields.email.dirty
-  const email_touched = form.fields.email.touched
-  const pass_value = form.fields.pass.value
-  const pass_error = form.fields.pass.error
-  const pass_dirty = form.fields.pass.dirty
-  const pass_touched = form.fields.pass.touched
+  const {
+    email_value,
+    email_error,
+    email_valid,
+    email_dirty,
+    email_touched,
+    email_handleChange,
+    email_handleBlur,
+    pass_value,
+    pass_error,
+    pass_dirty,
+    pass_touched,
+    pass_handleChange,
+    pass_handleBlur,
+  } = form.stores
 
   const { submitting, valid, model } = form
 </script>
@@ -34,8 +40,8 @@
   <fieldset>
     <input
       name="email"
-      on:input={form.fields.email.handleChange}
-      on:blur={form.fields.email.handleBlur}
+      on:input={email_handleChange}
+      on:blur={email_handleBlur}
       placeholder="Email"
       value={$email_value || ''}
       class:invalid={!$email_valid && $email_touched}
@@ -49,8 +55,8 @@
       name="pass"
       type="password"
       placeholder="Password"
-      on:input={form.fields.pass.handleChange}
-      on:blur={form.fields.pass.handleBlur}
+      on:input={pass_handleChange}
+      on:blur={pass_handleBlur}
       value={$pass_value || ''}
       class:invalid={!!$pass_error && $pass_touched}
       class:valid={!$pass_error && !!$pass_dirty}

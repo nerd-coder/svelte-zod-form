@@ -1,4 +1,4 @@
-import { derived, get, writable, type Readable } from 'svelte/store'
+import { derived, get, writable, type Readable, type Updater } from 'svelte/store'
 import { zip } from 'radash'
 import { ZodEffects, ZodError, type z } from 'zod'
 import { debounce } from 'radash'
@@ -41,8 +41,26 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   /** Form settings. Should not be update */
   readonly options: ICreateFormOptions<O>
 
-  /** Generated fields's stores */
+  /**
+   * Generated fields's stores
+   * @deprecated Use `stores` instead
+   */
   fields: { [K in keyof Required<O>]: ZodFieldStore<K, A, O> }
+
+  /** Generated fields's stores */
+  // prettier-ignore
+  stores: 
+    & { [K in keyof Required<O> as `${string & K}_value`       ]: ZodFieldStore<K,A,O>['value'       ] }
+    & { [K in keyof Required<O> as `${string & K}_touched`     ]: ZodFieldStore<K,A,O>['touched'     ] }
+    & { [K in keyof Required<O> as `${string & K}_dirty`       ]: ZodFieldStore<K,A,O>['dirty'       ] }
+    & { [K in keyof Required<O> as `${string & K}_error`       ]: ZodFieldStore<K,A,O>['error'       ] }
+    & { [K in keyof Required<O> as `${string & K}_valid`       ]: ZodFieldStore<K,A,O>['valid'       ] }
+    & { [K in keyof Required<O> as `${string & K}_handleUpdate`]: ZodFieldStore<K,A,O>['handleUpdate'] }
+    & { [K in keyof Required<O> as `${string & K}_handleChange`]: ZodFieldStore<K,A,O>['handleChange'] }
+    & { [K in keyof Required<O> as `${string & K}_handleBlur`  ]: ZodFieldStore<K,A,O>['handleBlur'  ] }
+    & { [K in keyof Required<O> as `${string & K}_reset`       ]: ZodFieldStore<K,A,O>['reset'       ] }
+    & { [K in keyof Required<O> as `${string & K}_setError`    ]: ZodFieldStore<K,A,O>['setError'    ] }
+    & { [K in keyof Required<O> as `${string & K}_setTouched`  ]: ZodFieldStore<K,A,O>['setTouched'  ] }
   /**
    * Function to start parsing, validating and submit the form's data.
    *
@@ -176,6 +194,16 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     this.fields = Object.fromEntries(
       fieldStores.map((z) => [z.name, z])
     ) as unknown as typeof this.fields
+    this.stores = Object.fromEntries(
+      fieldStores.flatMap((fieldStore) =>
+        Object.keys(fieldStore)
+          .filter((key) => key !== 'name')
+          .map((prop) => [
+            `${String(fieldStore.name)}_${prop}`,
+            fieldStore[prop as keyof typeof fieldStore],
+          ])
+      )
+    ) as typeof this.stores
     this.triggerSubmit = triggerSubmit
     this.reset = handleReset
     this.submitting = toReadable(submitting)
