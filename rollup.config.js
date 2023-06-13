@@ -5,13 +5,11 @@ import nodeResolve from '@rollup/plugin-node-resolve'
 
 import pkg from './package.json' assert { type: 'json' }
 
-const sourcemap = true
-
 export default defineConfig({
   input: './src/lib/index.ts',
   output: [
-    { file: pkg.module, format: 'esm', sourcemap },
-    { file: pkg.main, format: 'cjs', sourcemap },
+    { file: pkg.module, format: 'esm' },
+    { file: pkg.main, format: 'cjs' },
   ],
   external: ['svelte/store', 'zod'],
   plugins: [

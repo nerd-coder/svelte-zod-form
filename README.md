@@ -2,6 +2,7 @@
 
 [![version](https://img.shields.io/npm/v/@nerd-coder/svelte-zod-form)](https://www.npmjs.com/package/@nerd-coder/svelte-zod-form)
 ![license](https://img.shields.io/github/license/nerd-coder/svelte-zod-form)
+![bundlejs](https://deno.bundlejs.com/?q=@nerd-coder/svelte-zod-form&badge=)
 [![codecov](https://codecov.io/gh/nerd-coder/svelte-zod-form/branch/main/graph/badge.svg?token=60IHHKQJ1Y)](https://codecov.io/gh/nerd-coder/svelte-zod-form)
 
 Building forms in Svelte with breeze, using [Zod](https://zod.dev/)
@@ -200,8 +201,8 @@ const form = new ZodFormStore(schema, {
 ## Features
 
 - Use Svelte native stores
-- Fast - only update what changed
-- Minimal - only **~1.22Kb** in size (gzipped)
+- Fast: only update what changed, and you only subscribe to what you need
+- Minimal - only **~1.55Kb** in size (gzipped)
 - Build-in validation using Zod
 - Typescript
 
