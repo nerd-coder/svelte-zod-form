@@ -1,6 +1,6 @@
 # 🌵 Svelte Zod Form
 
-[![codecov](https://codecov.io/gh/nerd-coder/svelte-zod-form/branch/main/graph/badge.svg?token=60IHHKQJ1Y)](https://codecov.io/gh/nerd-coder/svelte-zod-form)
+[![codecov](https://codecov.io/gh/nerd-coder/svelte-zod-form/branch/main/graph/badge.svg?token=60IHHKQJ1Y)](https://codecov.io/gh/nerd-coder/svelte-zod-form) [![version](https://img.shields.io/npm/v/@nerd-coder/svelte-zod-form)](https://www.npmjs.com/package/@nerd-coder/svelte-zod-form)
 
 Building forms with breeze, using Svelte + Zod
 
