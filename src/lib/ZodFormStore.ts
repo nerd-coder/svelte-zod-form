@@ -14,7 +14,10 @@ interface ICreateFormOptions<T> {
    * The initial value of fields in the form.
    */
   initialValue?: Partial<T>
-  /** Should return nothing, or an error message */
+  /**
+   * Async callback to handle submmition of the form.
+   * Should return nothing, or an `string` contain error message
+   */
   onSubmit?: (v: T) => Promise<void | string> | string | void
   /**
    * Auto trigger submit when any data changed, after the delay in `ms`.
@@ -24,8 +27,10 @@ interface ICreateFormOptions<T> {
    */
   autoSubmitAfter?: number
   /**
-   * Debounce the value update (ms). Passing 0 to disable debounce
-   * @default 0
+   * Debounce the value update, in `ms`.
+   * Passing falsy value (`0` or `undefined`) to disabled.
+   *
+   * @default undefined
    */
   debounceDelay?: number
   /** Print debug messages */

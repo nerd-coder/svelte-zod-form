@@ -5,17 +5,53 @@ import type { z } from 'zod'
 import { getErrorMessage, toReadable } from './utils.js'
 
 export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
+  /**
+   * Field name
+   */
   name: K
+  /**
+   * Readable store holding field's value
+   */
   value: Readable<O[K]>
+  /**
+   * The field have been touched or not
+   */
   touched: Readable<boolean>
+  /**
+   * The field value been changed or not
+   */
   dirty: Readable<boolean>
+  /**
+   * The field validation error, if any
+   */
   error: Readable<string>
+  /**
+   * The field value is valid or not
+   */
   valid: Readable<boolean>
+  /**
+   * Callback to update field's value
+   */
   handleUpdate: (updater: Updater<O[K]>) => void
+  /**
+   * Callback to update field's value
+   */
   handleChange: (e: unknown) => void
+  /**
+   * Callback to mark field as touched
+   */
   handleBlur: () => void
+  /**
+   * Reset field to original state
+   */
   reset: () => void
+  /**
+   * Set custom field error
+   */
   setError: (e: string) => void
+  /**
+   * Update touched state
+   */
   setTouched: (v: boolean) => void
 
   constructor(
