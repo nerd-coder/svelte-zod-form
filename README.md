@@ -31,7 +31,7 @@ const loginSchema = z.object({
 })
 ```
 
-Then pass the schem to `ZodFormStore`:
+Then pass the schema to `ZodFormStore`:
 
 ```ts
 const form = new ZodFormStore(loginSchema, { onSubmit: (v) => console.log('Submitted values:', v) })
@@ -56,7 +56,7 @@ const {
 } = form.stores
 ```
 
-Fianlly, use it in html
+Finally, use it in html
 
 ```svelte
 <form on:submit|preventDefault={form.triggerSubmit}>
@@ -204,11 +204,11 @@ const form = new ZodFormStore(schema, {
 - Fast: only update what changed, and you only subscribe to what you need
 - Minimal - only **~1.55Kb** in size (gzipped)
 - Build-in validation using Zod
-- Typescript
+- TypeScript
 
 ## Extra
 
-Why the catus?
+Why the cactus?
 
 \> For it resilience
 
