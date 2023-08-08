@@ -34,10 +34,10 @@
   "release-it": {
     "hooks": {
       "before:init": [
-        "npm run lint",
-        "npm run check",
-        "npm test -- --run",
-        "npm run build"
+        "pnpm run lint",
+        "pnpm run check",
+        "pnpm test -- --run",
+        "pnpm run build"
       ]
     },
     "npm": {
