@@ -90,14 +90,22 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
       setError('')
       let nextVal = e
       if (e instanceof Event)
-        if (e instanceof CustomEvent)
-          if (typeof e.detail === 'object' && 'value' in e.detail) nextVal = e.detail.value
-          else nextVal = e.detail
-        else if (e.target instanceof HTMLInputElement)
-          if (e.target.type === 'checkbox') nextVal = e.target.checked
-          else nextVal = e.target.value
-        else if (e.target instanceof HTMLSelectElement) nextVal = e.target.value
-        else if (e.target instanceof HTMLTextAreaElement) nextVal = e.target.value
+        if (
+          // Support for custom event that have 'value' field in the detail
+          e instanceof CustomEvent &&
+          typeof e.detail === 'object' &&
+          e.detail !== null &&
+          'value' in e.detail
+        )
+          nextVal = e.detail.value
+        else if (e.currentTarget instanceof HTMLInputElement)
+          if (e.currentTarget.type === 'checkbox') nextVal = e.currentTarget.checked
+          else nextVal = e.currentTarget.value
+        else if (
+          e.currentTarget instanceof HTMLSelectElement ||
+          e.currentTarget instanceof HTMLTextAreaElement
+        )
+          nextVal = e.currentTarget.value
 
       try {
         nextVal = schema.parse(nextVal)

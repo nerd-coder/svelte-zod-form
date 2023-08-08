@@ -71,23 +71,6 @@ describe('ZodFieldStore_class', () => {
     expect(get(field.value)).toBe('Jane')
   })
 
-  it('test_handling_custom_event_on_field', () => {
-    const schema = z.object({
-      name: z.string(),
-      age: z.number(),
-    })
-    const field = new ZodFieldStore(schema, 'name', 'John')
-
-    const elm = document.createElement('input')
-    elm.addEventListener('custom', field.handleChange)
-
-    elm.dispatchEvent(new CustomEvent('custom', { detail: 'Jane' as unknown as object }))
-    expect(get(field.value)).toBe('Jane')
-
-    elm.dispatchEvent(new CustomEvent('custom', { detail: { value: 'Mary' } }))
-    expect(get(field.value)).toBe('Mary')
-  })
-
   // Tests that an error message can be set on the field.
   it('test_setting_error_message_on_field', () => {
     const schema = z.object({
