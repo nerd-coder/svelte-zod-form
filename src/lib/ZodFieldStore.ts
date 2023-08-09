@@ -90,14 +90,10 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
       setError('')
       let nextVal = e
       if (e instanceof Event)
-        if (
-          // Support for custom event that have 'value' field in the detail
-          e instanceof CustomEvent &&
-          typeof e.detail === 'object' &&
-          e.detail !== null &&
-          'value' in e.detail
-        )
-          nextVal = e.detail.value
+        if (e instanceof CustomEvent)
+          if (typeof e.detail === 'object' && e.detail !== null && 'value' in e.detail)
+            nextVal = e.detail.value
+          else nextVal = e.detail
         else if (e.currentTarget instanceof HTMLInputElement)
           if (e.currentTarget.type === 'checkbox') nextVal = e.currentTarget.checked
           else nextVal = e.currentTarget.value
