@@ -191,7 +191,8 @@ const form = new ZodFormStore(schema, {
 | stores._"fieldname"_\_dirty        | `Readable<boolean>`                          | The field value been changed or not  |
 | stores._"fieldname"_\_error        | `Readable<boolean>`                          | The field validation error, if any   |
 | stores._"fieldname"_\_valid        | `Readable<boolean>`                          | The field value is valid or not      |
-| stores._"fieldname"_\_handleUpdate | `(updater: Updater<T['fieldname']>) => void` | Callback to update field's value     |
+| stores._"fieldname"_\_updateValue  | `(updater: Updater<T['fieldname']>) => void` | Function to update field's value     |
+| stores._"fieldname"_\_setValue     | `(val: T['fieldname']) => void`              | Function to set field's value        |
 | stores._"fieldname"_\_handleChange | `(e: unknown) => void`                       | Callback to update field's value     |
 | stores._"fieldname"_\_handleBlur   | `() => void`                                 | Callback to mark field as touched    |
 | stores._"fieldname"_\_reset        | `() => void`                                 | Reset field to original state        |

@@ -60,7 +60,8 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     & { [K in keyof Required<O> as `${string & K}_dirty`       ]: ZodFieldStore<K,A,O>['dirty'       ] }
     & { [K in keyof Required<O> as `${string & K}_error`       ]: ZodFieldStore<K,A,O>['error'       ] }
     & { [K in keyof Required<O> as `${string & K}_valid`       ]: ZodFieldStore<K,A,O>['valid'       ] }
-    & { [K in keyof Required<O> as `${string & K}_handleUpdate`]: ZodFieldStore<K,A,O>['handleUpdate'] }
+    & { [K in keyof Required<O> as `${string & K}_updateValue` ]: ZodFieldStore<K,A,O>['updateValue' ] }
+    & { [K in keyof Required<O> as `${string & K}_setValue`    ]: ZodFieldStore<K,A,O>['setValue'    ] }
     & { [K in keyof Required<O> as `${string & K}_handleChange`]: ZodFieldStore<K,A,O>['handleChange'] }
     & { [K in keyof Required<O> as `${string & K}_handleBlur`  ]: ZodFieldStore<K,A,O>['handleBlur'  ] }
     & { [K in keyof Required<O> as `${string & K}_reset`       ]: ZodFieldStore<K,A,O>['reset'       ] }

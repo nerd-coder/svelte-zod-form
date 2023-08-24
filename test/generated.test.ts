@@ -19,7 +19,8 @@ describe('ZodFieldStore_class', () => {
     expect(field.dirty).toBeDefined()
     expect(field.error).toBeDefined()
     expect(field.handleChange).toBeDefined()
-    expect(field.handleUpdate).toBeDefined()
+    expect(field.updateValue).toBeDefined()
+    expect(field.setValue).toBeDefined()
     expect(field.handleBlur).toBeDefined()
     expect(field.reset).toBeDefined()
     expect(field.setError).toBeDefined()
@@ -51,8 +52,10 @@ describe('ZodFieldStore_class', () => {
       age: z.number(),
     })
     const field = new ZodFieldStore(schema, 'name', 'John')
-    field.handleUpdate(() => 'Jane')
+    field.updateValue(() => 'Jane')
     expect(get(field.value)).toBe('Jane')
+    field.setValue('Tony')
+    expect(get(field.value)).toBe('Tony')
   })
 
   // Tests that a change event on the field can be handled.

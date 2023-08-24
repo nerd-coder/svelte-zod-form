@@ -32,7 +32,11 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
   /**
    * Callback to update field's value
    */
-  handleUpdate: (updater: Updater<O[K]>) => void
+  updateValue: (updater: Updater<O[K]>) => void
+  /**
+   * Function to set field's value
+   */
+  setValue: (val: O[K]) => void
   /**
    * Callback to update field's value
    */
@@ -79,12 +83,12 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
     } catch (e) {
       handleError(e)
     }
-    const resetValue = () => value.set(initialValue as O[K])
+    const _resetValue = () => value.set(initialValue as O[K])
 
-    resetValue()
+    _resetValue()
 
-    const setValue = ms > 0 ? debounce({ delay: ms }, value.set) : value.set
-    const updateValue = ms > 0 ? debounce({ delay: ms }, value.update) : value.update
+    const _setValue = ms > 0 ? debounce({ delay: ms }, value.set) : value.set
+    const _updateValue = ms > 0 ? debounce({ delay: ms }, value.update) : value.update
 
     const handleChange = (e: unknown) => {
       setError('')
@@ -109,11 +113,23 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
         handleError(e)
       }
 
-      setValue(nextVal as O[K])
+      _setValue(nextVal as O[K])
       setTouched(true)
       setDirty(true)
     }
-    const handleUpdate = (updater: Updater<O[K]>) => {
+    const handleSetValue = (v: O[K]) => {
+      setError('')
+      if (schema)
+        try {
+          _setValue(schema.parse(v))
+        } catch (e) {
+          handleError(e)
+        }
+      else _setValue(v)
+      setTouched(true)
+      setDirty(true)
+    }
+    const handleUpdateValue = (updater: Updater<O[K]>) => {
       const safeUpdater: typeof updater = (v) => {
         setError('')
         const updatedVal = updater(v)
@@ -125,7 +141,7 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
           }
         return updatedVal
       }
-      updateValue(safeUpdater)
+      _updateValue(safeUpdater)
       setTouched(true)
       setDirty(true)
     }
@@ -134,7 +150,7 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
       touched.set(false)
       dirty.set(false)
       error.set('')
-      resetValue()
+      _resetValue()
     }
 
     this.name = name
@@ -144,7 +160,8 @@ export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape, O = A> {
     this.error = toReadable(error)
     this.valid = derived(error, (e) => !e)
     this.handleChange = handleChange
-    this.handleUpdate = handleUpdate
+    this.updateValue = handleUpdateValue
+    this.setValue = handleSetValue
     this.handleBlur = handleBlur
     this.reset = handleReset
     this.setError = setError
