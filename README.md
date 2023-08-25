@@ -217,3 +217,7 @@ Why the cactus?
 
 - More tests
 - Support Array
+
+## Contributions
+
+Any contributions are highly appreciate, please make a pull-request. If you would like to discuses a new feature, please create an issue first.
