@@ -42,18 +42,7 @@ All the field's handler, value will be generated and typed for you:
 ```ts
 // We need pull the generated field store out, in order
 // to use the Svelte's "auto subscription" feature "$"
-const {
-  email_value,
-  email_error,
-  email_dirty,
-  email_handleChange,
-  email_handleBlur,
-  pass_value,
-  pass_error,
-  pass_dirty,
-  pass_handleChange,
-  pass_handleBlur,
-} = form.stores
+const { email_value, email_error, email_dirty, pass_value, pass_error, pass_dirty } = form.stores
 ```
 
 Finally, use it in html
@@ -63,8 +52,8 @@ Finally, use it in html
   <fieldset>
     <input
       name="email"
-      on:input={email_handleChange}
-      on:blur={email_handleBlur}
+      on:input={form.fields.email.handleChange}
+      on:blur={form.fields.email.handleBlur}
       value={$email_value || ''}
       class:invalid={!!$email_error}
       class:valid={!$email_error && !!$email_dirty}
@@ -76,8 +65,8 @@ Finally, use it in html
     <input
       name="pass"
       type="password"
-      on:input={pass_handleChange}
-      on:blur={pass_handleBlur}
+      on:input={form.fields.pass.handleChange}
+      on:blur={form.fields.pass.handleBlur}
       value={$pass_value || ''}
       class:invalid={!!$pass_error}
       class:valid={!$pass_error && !!$pass_dirty}
@@ -180,24 +169,30 @@ const form = new ZodFormStore(schema, {
 | errors        | `Readable<string[]>`             | Array of string contains all error messages (including fields's errors and error return from `onSubmit` handler). |
 | dirty         | `Readable<boolean>`              | Indicate if the form is edited or submitted.                                                                      |
 | valid         | `Readable<boolean>`              | Indicate if the form is valid.                                                                                    |
-| stores        | `object`                         | Generated fields's stores. Each field will contain the set of prop below:                                         |
+| fields        | `object`                         | Generated fields's functions.                                                                                     |
+| stores        | `object`                         | Generated fields's stores.                                                                                        |
 
 ### Generated stores's props
 
-| Prop                               | Type                                         | Description                          |
-| ---------------------------------- | -------------------------------------------- | ------------------------------------ |
-| stores._"fieldname"_\_value        | `Readable<T['fieldname']>`                   | Readable store holding field's value |
-| stores._"fieldname"_\_touched      | `Readable<boolean>`                          | The field have been touched or not   |
-| stores._"fieldname"_\_dirty        | `Readable<boolean>`                          | The field value been changed or not  |
-| stores._"fieldname"_\_error        | `Readable<boolean>`                          | The field validation error, if any   |
-| stores._"fieldname"_\_valid        | `Readable<boolean>`                          | The field value is valid or not      |
-| stores._"fieldname"_\_updateValue  | `(updater: Updater<T['fieldname']>) => void` | Function to update field's value     |
-| stores._"fieldname"_\_setValue     | `(val: T['fieldname']) => void`              | Function to set field's value        |
-| stores._"fieldname"_\_handleChange | `(e: unknown) => void`                       | Callback to update field's value     |
-| stores._"fieldname"_\_handleBlur   | `() => void`                                 | Callback to mark field as touched    |
-| stores._"fieldname"_\_reset        | `() => void`                                 | Reset field to original state        |
-| stores._"fieldname"_\_setError     | `(e: string) => void`                        | Set custom field error               |
-| stores._"fieldname"_\_setTouched   | `(v: boolean) => void`                       | Update touched state                 |
+| Prop                          | Type                       | Description                                |
+| ----------------------------- | -------------------------- | ------------------------------------------ |
+| stores._`fieldname`_\_value   | `Readable<T['fieldname']>` | Readable store holding field's value       |
+| stores._`fieldname`_\_touched | `Readable<boolean>`        | The field have been touched or not         |
+| stores._`fieldname`_\_dirty   | `Readable<boolean>`        | The field value been changed or not        |
+| stores._`fieldname`_\_error   | `Readable<string>`         | The field validation error message, if any |
+| stores._`fieldname`_\_valid   | `Readable<boolean>`        | The field value is valid or not            |
+
+### Generated field's functions
+
+| Prop                              | Type                                         | Description                       |
+| --------------------------------- | -------------------------------------------- | --------------------------------- |
+| fields._`fieldname`_.updateValue  | `(updater: Updater<T['fieldname']>) => void` | Function to update field's value  |
+| stores._`fieldname`_.setValue     | `(val: T['fieldname']) => void`              | Function to set field's value     |
+| stores._`fieldname`_.handleChange | `(val: unknown) => void`                     | Callback to update field's value  |
+| stores._`fieldname`_.handleBlur   | `() => void`                                 | Callback to mark field as touched |
+| stores._`fieldname`_.reset        | `() => void`                                 | Reset field to original state     |
+| stores._`fieldname`_.setError     | `(msg: string) => void`                      | Manually set field error          |
+| stores._`fieldname`_.setTouched   | `(val: boolean) => void`                     | Manually set touched state        |
 
 ## Features
 
