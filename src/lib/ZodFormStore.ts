@@ -39,7 +39,7 @@ interface ICreateFormOptions<T> {
 /**
  * Instance that hold all our form's state, as Svelte's Store
  */
-export class ZodFormStore<A extends z.ZodRawShape, O = A> {
+export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
   /** Form's data. Will be passed to onSubmit handler */
   readonly model: Readable<O>
   /** Form settings. Should not be update */
