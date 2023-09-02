@@ -1,6 +1,6 @@
 import { derived, get, writable, type Readable } from 'svelte/store'
 import { ZodEffects, ZodError, type z } from 'zod'
-import { pick, zip, keys, debounce } from 'radash'
+import { pick, zip, debounce } from 'radash'
 
 import { ZodFieldStore } from './ZodFieldStore.js'
 import { getErrorMessage, toReadable, trurthly } from './utils.js'
@@ -49,7 +49,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
    * Generated fields's functions
    */
   fields: {
-    [K in keyof Required<O>]: Pick<
+    [K in Extract<keyof O, string>]: Pick<
       ZodFieldStore<K, A, O>,
       | 'updateValue'
       | 'setValue'
@@ -64,11 +64,11 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
   /** Generated fields's stores */
   // prettier-ignore
   stores: 
-    & { [K in keyof Required<O> as `${string & K}_value`       ]: ZodFieldStore<K,A,O>['value'       ] }
-    & { [K in keyof Required<O> as `${string & K}_touched`     ]: ZodFieldStore<K,A,O>['touched'     ] }
-    & { [K in keyof Required<O> as `${string & K}_dirty`       ]: ZodFieldStore<K,A,O>['dirty'       ] }
-    & { [K in keyof Required<O> as `${string & K}_error`       ]: ZodFieldStore<K,A,O>['error'       ] }
-    & { [K in keyof Required<O> as `${string & K}_valid`       ]: ZodFieldStore<K,A,O>['valid'       ] }
+    & { [K in Extract<keyof O,string> as `${K}_value`  ]: ZodFieldStore<K,A,O>['value'  ] }
+    & { [K in Extract<keyof O,string> as `${K}_touched`]: ZodFieldStore<K,A,O>['touched'] }
+    & { [K in Extract<keyof O,string> as `${K}_dirty`  ]: ZodFieldStore<K,A,O>['dirty'  ] }
+    & { [K in Extract<keyof O,string> as `${K}_error`  ]: ZodFieldStore<K,A,O>['error'  ] }
+    & { [K in Extract<keyof O,string> as `${K}_valid`  ]: ZodFieldStore<K,A,O>['valid'  ] }
   /**
    * Function to start parsing, validating and submit the form's data.
    *
@@ -130,7 +130,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
       (name) =>
         new ZodFieldStore(
           schema instanceof ZodEffects ? schema.innerType() : schema,
-          name as keyof O,
+          name as Extract<keyof O, string>,
           this.options.initialValue?.[name as keyof O],
           this.options.debounceDelay
         )
@@ -199,7 +199,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
       })
     }
 
-    type FKey = keyof ZodFieldStore<keyof O, A, O>
+    type FKey = keyof ZodFieldStore<Extract<keyof O, string>, A, O>
     const handlerFuncNames: Array<FKey> = [
       'updateValue',
       'setValue',
@@ -237,7 +237,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
   /** Set the form's error message manually */
   setError(errorMessage: string, path: (string | number)[]) {
     const [currentPath] = path
-    const field = this.fields[currentPath as keyof O]
+    const field = this.fields[currentPath as Extract<keyof O, string>]
     if (!field) return
     field.setError(errorMessage)
   }

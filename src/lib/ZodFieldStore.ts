@@ -4,7 +4,11 @@ import type { z } from 'zod'
 
 import { getErrorMessage, toReadable } from './utils.js'
 
-export class ZodFieldStore<K extends keyof O, A extends z.ZodRawShape = z.ZodRawShape, O = A> {
+export class ZodFieldStore<
+  K extends Extract<keyof O, string>,
+  A extends z.ZodRawShape = z.ZodRawShape,
+  O = A,
+> {
   /**
    * Field name
    */
