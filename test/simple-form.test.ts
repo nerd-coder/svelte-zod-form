@@ -17,8 +17,8 @@ const schema = z
 test('should have undefined as initital values', () => {
   const form = new ZodFormStore(schema)
 
-  expect(get(form.fields.email.value)).toBe(undefined)
-  expect(get(form.fields.pass.value)).toBe(undefined)
+  expect(get(form.stores.email_value)).toBe(undefined)
+  expect(get(form.stores.pass_value)).toBe(undefined)
 })
 
 test('should hold initital values, even if invalid', () => {
@@ -29,18 +29,16 @@ test('should hold initital values, even if invalid', () => {
     },
   })
 
-  expect(get(form.fields.email.value)).toBe('this is invalid email')
-  expect(get(form.fields.pass.value)).toBe('123')
+  expect(get(form.stores.email_value)).toBe('this is invalid email')
+  expect(get(form.stores.pass_value)).toBe('123')
 })
 
 test('should update vaule when changed', () => {
   const form = new ZodFormStore(schema)
-  const field = form.fields.email
-
   const email = 'me@toan.io'
-  field.handleChange(email)
+  form.fields.email.handleChange(email)
 
-  expect(get(field.value)).toBe(email)
+  expect(get(form.stores.email_value)).toBe(email)
 })
 
 test('should have error message about email', () => {
@@ -48,25 +46,25 @@ test('should have error message about email', () => {
 
   form.fields.email.handleChange('abcdef')
 
-  expect(get(form.fields.email.error)).toBe('Invalid email')
+  expect(get(form.stores.email_error)).toBe('Invalid email')
 })
 
 test('should reset', () => {
   const form = new ZodFormStore(schema)
 
-  expect(get(form.fields.email.value)).toBe(undefined)
-  expect(get(form.fields.pass.value)).toBe(undefined)
+  expect(get(form.stores.email_value)).toBe(undefined)
+  expect(get(form.stores.pass_value)).toBe(undefined)
 
   form.fields.email.handleChange('abc@mail.com')
   form.fields.pass.handleChange('123123')
 
-  expect(get(form.fields.email.value)).toBe('abc@mail.com')
-  expect(get(form.fields.pass.value)).toBe('123123')
+  expect(get(form.stores.email_value)).toBe('abc@mail.com')
+  expect(get(form.stores.pass_value)).toBe('123123')
 
   form.reset()
 
-  expect(get(form.fields.email.value)).toBe(undefined)
-  expect(get(form.fields.pass.value)).toBe(undefined)
+  expect(get(form.stores.email_value)).toBe(undefined)
+  expect(get(form.stores.pass_value)).toBe(undefined)
 })
 
 test('should reset to initial values', () => {
@@ -77,19 +75,19 @@ test('should reset to initial values', () => {
     },
   })
 
-  expect(get(form.fields.email.value)).toBe('abc')
-  expect(get(form.fields.pass.value)).toBe('123')
+  expect(get(form.stores.email_value)).toBe('abc')
+  expect(get(form.stores.pass_value)).toBe('123')
 
   form.fields.email.handleChange('abc@mail.com')
   form.fields.pass.handleChange('123123')
 
-  expect(get(form.fields.email.value)).toBe('abc@mail.com')
-  expect(get(form.fields.pass.value)).toBe('123123')
+  expect(get(form.stores.email_value)).toBe('abc@mail.com')
+  expect(get(form.stores.pass_value)).toBe('123123')
 
   form.reset()
 
-  expect(get(form.fields.email.value)).toBe('abc')
-  expect(get(form.fields.pass.value)).toBe('123')
+  expect(get(form.stores.email_value)).toBe('abc')
+  expect(get(form.stores.pass_value)).toBe('123')
 })
 
 test('should start with no dirty ', () => {
@@ -156,7 +154,7 @@ test('should valid', () => {
       pass: '1234',
       pass_verify: '1234',
     },
-    onSubmit: async v => console.log('submitted', v),
+    onSubmit: async (v) => console.log('submitted', v),
   })
 
   const spy = vi.spyOn(form.options, 'onSubmit')
@@ -174,12 +172,12 @@ test('should show verify password error', () => {
       pass: '1234',
       pass_verify: '12345',
     },
-    onSubmit: async v => console.log('submitted', v),
+    onSubmit: async (v) => console.log('submitted', v),
   })
 
   form.triggerSubmit()
 
-  expect(get(form.fields.pass_verify.error)).toBe('Passwords does not match')
+  expect(get(form.stores.pass_verify_error)).toBe('Passwords does not match')
   expect(get(form.errors)).to.be.instanceOf(Array).and.include('Passwords does not match')
   expect(get(form.error)).toBe('')
 })
@@ -209,7 +207,7 @@ test('should not trigger onSubmit handler if there is any field error(s)', () =>
       pass: '1234',
       pass_verify: '1234',
     },
-    onSubmit: async v => console.log('submitted', v),
+    onSubmit: async (v) => console.log('submitted', v),
   })
 
   const spy = vi.spyOn(form.options, 'onSubmit')
@@ -217,7 +215,7 @@ test('should not trigger onSubmit handler if there is any field error(s)', () =>
   form.triggerSubmit()
 
   expect(spy).not.toBeCalled()
-  expect(get(form.fields.email.error)).toBe('Invalid email')
+  expect(get(form.stores.email_error)).toBe('Invalid email')
 })
 
 test('should do nothing if setting the wrong field', () => {
@@ -227,7 +225,7 @@ test('should do nothing if setting the wrong field', () => {
       pass: '1234',
       pass_verify: '1234',
     },
-    onSubmit: async v => console.log('submitted', v),
+    onSubmit: async (v) => console.log('submitted', v),
   })
 
   form.setError('failed', ['abc'])

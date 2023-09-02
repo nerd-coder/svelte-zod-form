@@ -23,12 +23,12 @@ const schema = z.object({
 test('should have undefined as initital values', () => {
   const form = new ZodFormStore(schema)
 
-  expect(get(form.fields.name.value)).toBe(undefined)
-  expect(get(form.fields.address.value)).toBe(undefined)
-  expect(get(form.fields.founders.value)).toBe(undefined)
+  expect(get(form.stores.name_value)).toBe(undefined)
+  expect(get(form.stores.address_value)).toBe(undefined)
+  expect(get(form.stores.founders_value)).toBe(undefined)
 })
 
-test('should valid', () => {
+test('should valid', async () => {
   const form = new ZodFormStore(schema, {
     initialValue: {
       name: '',
@@ -47,8 +47,8 @@ test('should valid', () => {
     onSubmit: () => '',
   })
 
-  form.triggerSubmit()
+  await form.triggerSubmit()
 
   expect(get(form.error)).toBe('')
-  expect(get(form.fields.founders.error)).toBe('Invalid social link')
+  expect(get(form.stores.founders_error)).toBe('Invalid social link')
 })

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { z } from 'zod'
+  import { sleep } from 'radash'
   import { ZodFormStore } from '@nerd-coder/svelte-zod-form'
 
   const loginSchema = z.object({
@@ -10,8 +11,7 @@
     debug: true,
     autoSubmitAfter: 300,
     onSubmit: async (v) => {
-      // fake delay to simutate api call
-      await new Promise((r) => setTimeout(r, 2000))
+      await sleep(2000) // fake delay to simutate api call
       console.log('Submitted values:', v)
     },
   })
@@ -24,25 +24,21 @@
     email_valid,
     email_dirty,
     email_touched,
-    email_handleChange,
-    email_handleBlur,
     pass_value,
     pass_error,
     pass_dirty,
     pass_touched,
-    pass_handleChange,
-    pass_handleBlur,
   } = form.stores
 
-  const { submitting, valid, model } = form
+  const { submitting, valid, model, fields } = form
 </script>
 
 <form on:submit|preventDefault={form.triggerSubmit} on:reset={form.reset}>
   <fieldset>
     <input
       name="email"
-      on:input={email_handleChange}
-      on:blur={email_handleBlur}
+      on:input={fields.email.handleChange}
+      on:blur={fields.email.handleBlur}
       placeholder="Email"
       value={$email_value || ''}
       class:invalid={!$email_valid && $email_touched}
@@ -56,8 +52,8 @@
       name="pass"
       type="password"
       placeholder="Password"
-      on:input={pass_handleChange}
-      on:blur={pass_handleBlur}
+      on:input={fields.pass.handleChange}
+      on:blur={fields.pass.handleBlur}
       value={$pass_value || ''}
       class:invalid={!!$pass_error && $pass_touched}
       class:valid={!$pass_error && !!$pass_dirty}

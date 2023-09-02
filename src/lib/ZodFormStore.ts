@@ -1,7 +1,6 @@
 import { derived, get, writable, type Readable } from 'svelte/store'
-import { zip } from 'radash'
 import { ZodEffects, ZodError, type z } from 'zod'
-import { debounce } from 'radash'
+import { pick, zip, keys, debounce } from 'radash'
 
 import { ZodFieldStore } from './ZodFieldStore.js'
 import { getErrorMessage, toReadable, trurthly } from './utils.js'
@@ -47,10 +46,20 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
   readonly options: ICreateFormOptions<O>
 
   /**
-   * Generated fields's stores
-   * @deprecated Use `stores` instead
+   * Generated fields's functions
    */
-  fields: { [K in keyof Required<O>]: ZodFieldStore<K, A, O> }
+  fields: {
+    [K in keyof Required<O>]: Pick<
+      ZodFieldStore<K, A, O>,
+      | 'updateValue'
+      | 'setValue'
+      | 'handleChange'
+      | 'handleBlur'
+      | 'reset'
+      | 'setError'
+      | 'setTouched'
+    >
+  }
 
   /** Generated fields's stores */
   // prettier-ignore
@@ -60,13 +69,6 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
     & { [K in keyof Required<O> as `${string & K}_dirty`       ]: ZodFieldStore<K,A,O>['dirty'       ] }
     & { [K in keyof Required<O> as `${string & K}_error`       ]: ZodFieldStore<K,A,O>['error'       ] }
     & { [K in keyof Required<O> as `${string & K}_valid`       ]: ZodFieldStore<K,A,O>['valid'       ] }
-    & { [K in keyof Required<O> as `${string & K}_updateValue` ]: ZodFieldStore<K,A,O>['updateValue' ] }
-    & { [K in keyof Required<O> as `${string & K}_setValue`    ]: ZodFieldStore<K,A,O>['setValue'    ] }
-    & { [K in keyof Required<O> as `${string & K}_handleChange`]: ZodFieldStore<K,A,O>['handleChange'] }
-    & { [K in keyof Required<O> as `${string & K}_handleBlur`  ]: ZodFieldStore<K,A,O>['handleBlur'  ] }
-    & { [K in keyof Required<O> as `${string & K}_reset`       ]: ZodFieldStore<K,A,O>['reset'       ] }
-    & { [K in keyof Required<O> as `${string & K}_setError`    ]: ZodFieldStore<K,A,O>['setError'    ] }
-    & { [K in keyof Required<O> as `${string & K}_setTouched`  ]: ZodFieldStore<K,A,O>['setTouched'  ] }
   /**
    * Function to start parsing, validating and submit the form's data.
    *
@@ -197,13 +199,23 @@ export class ZodFormStore<A extends z.ZodRawShape, O = A> {
       })
     }
 
+    type FKey = keyof ZodFieldStore<keyof O, A, O>
+    const handlerFuncNames: Array<FKey> = [
+      'updateValue',
+      'setValue',
+      'handleChange',
+      'handleBlur',
+      'reset',
+      'setError',
+      'setTouched',
+    ]
     this.fields = Object.fromEntries(
-      fieldStores.map((z) => [z.name, z])
+      fieldStores.map((z) => [z.name, pick(z, handlerFuncNames)])
     ) as unknown as typeof this.fields
     this.stores = Object.fromEntries(
       fieldStores.flatMap((fieldStore) =>
         Object.keys(fieldStore)
-          .filter((key) => key !== 'name')
+          .filter((key) => key !== 'name' && !handlerFuncNames.includes(key as FKey))
           .map((prop) => [
             `${String(fieldStore.name)}_${prop}`,
             fieldStore[prop as keyof typeof fieldStore],
