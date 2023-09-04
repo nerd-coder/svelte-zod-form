@@ -264,3 +264,11 @@ test('should have error returned from `onSubmit` handler (async)', async () => {
   expect(get(form.error)).toBe('submitted failed')
   expect(get(form.errors)).to.be.instanceOf(Array).and.include('submitted failed')
 })
+
+test('should have error if have no initial value', async () => {
+  const form = new ZodFormStore(schema, { onSubmit: async () => {} })
+  expect(get(form.valid)).toBe(false)
+  await form.triggerSubmit()
+  expect(get(form.valid)).toBe(false)
+  expect(get(form.errors)).toContain('Required')
+})
