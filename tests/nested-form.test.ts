@@ -13,7 +13,7 @@ const schema = z.object({
       socials: z.array(
         z.object({
           type: z.enum(['facebook', 'linkedin']),
-          link: z.string().nonempty('Invalid social link'),
+          link: z.string().min(1, 'Invalid social link'),
         })
       ),
     })

@@ -272,3 +272,12 @@ test('should have error if have no initial value', async () => {
   expect(get(form.valid)).toBe(false)
   expect(get(form.errors)).toContain('Required')
 })
+
+test('should not trigger submit if having error', async () => {
+  const form = new ZodFormStore(schema, { onSubmit: async () => {} })
+  const spy = vi.spyOn(form.options, 'onSubmit')
+  expect(get(form.valid)).toBe(false)
+  await form.triggerSubmit()
+  expect(get(form.valid)).toBe(false)
+  expect(spy).toBeCalledTimes(0)
+})
