@@ -8,7 +8,7 @@ import { getErrorMessage, toReadable } from './utils.js'
 /**
  * Settings for ZodFormStore
  */
-interface ICreateFormOptions<T> {
+export interface ZodFormStoreOptions<T> {
   /**
    * The initial value of fields in the form.
    */
@@ -32,7 +32,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O extends object> {
   /** Form's data. Will be passed to onSubmit handler */
   readonly model: Readable<O>
   /** Form settings. Should not be update */
-  readonly options: ICreateFormOptions<O>
+  readonly options: ZodFormStoreOptions<O>
 
   /**
    * Generated fields's functions
@@ -91,7 +91,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O extends object> {
       | z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>
       | z.ZodEffects<z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>>,
     /** Additional configuration */
-    options?: ICreateFormOptions<O>
+    options?: ZodFormStoreOptions<O>
   ) {
     this.options = options || {}
 

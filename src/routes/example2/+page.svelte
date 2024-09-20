@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { z } from 'zod'
-  import { sleep } from 'radash'
   import { ZodFormStore } from '@nerd-coder/svelte-zod-form'
+  import { sleep } from 'radash'
+  import { onMount } from 'svelte'
+  import { z } from 'zod'
 
   const loginSchema = z.object({
     email: z.string().email(),
@@ -9,7 +10,6 @@
   })
   const form = new ZodFormStore(loginSchema, {
     debug: true,
-    autoSubmitAfter: 300,
     onSubmit: async v => {
       await sleep(2000) // fake delay to simulate api call
       console.log('Submitted values:', v)
@@ -31,6 +31,9 @@
   } = form.stores
 
   const { submitting, valid, model, fields } = form
+
+  // Setup auto submit and clean up
+  onMount(() => form.setupAutoSubmit(300))
 </script>
 
 <form on:submit|preventDefault={form.triggerSubmit} on:reset={form.reset}>

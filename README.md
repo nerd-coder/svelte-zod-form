@@ -111,38 +111,6 @@ const form = new ZodFormStore(schema, {
 })
 ```
 
-### `autoSubmitAfter`
-
-- type: `number`
-- required: `false`
-- default: `undefined`
-
-Auto trigger submit when any data changed, after the delay in `ms`.
-Passing falsy value (`0` or `undefined`) to disabled.
-
-```ts
-const form = new ZodFormStore(schema, {
-  autoSubmitAfter: 200,
-  ...
-})
-```
-
-### `debounceDelay`
-
-- type: `number`
-- required: `false`
-- default: `undefined`
-
-Debounce the value update, in `ms`.
-Passing falsy value (`0` or `undefined`) to disabled.
-
-```ts
-const form = new ZodFormStore(schema, {
-  debounceDelay: 200,
-  ...
-})
-```
-
 ### `debug`
 
 - type: `boolean`
@@ -160,49 +128,50 @@ const form = new ZodFormStore(schema, {
 
 ## API
 
-| Prop          | Type                             | Description                                                                                                       |
-| ------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| model         | `Readable<T>`                    | Form's data. Will be passed to onSubmit handler                                                                   |
-| options       | `readonly ICreateFormOptions<T>` | Form settings. Should not be update                                                                               |
-| triggerSubmit | `() => Promise<void>`            | Function to start parsing, validating and submit the form's data                                                  |
-| reset         | `() => void`                     | Function to reset the form to original state.                                                                     |
-| submitting    | `Readable<boolean>`              | True of submitting the form.                                                                                      |
-| error         | `Readable<string>`               | Error message returned from `onSubmit` handler, or custom validation message.                                     |
-| errors        | `Readable<string[]>`             | Array of string contains all error messages (including fields's errors and error return from `onSubmit` handler). |
-| dirty         | `Readable<boolean>`              | Indicate if the form is edited or submitted.                                                                      |
-| valid         | `Readable<boolean>`              | Indicate if the form is valid.                                                                                    |
-| fields        | `object`                         | Generated fields's functions.                                                                                     |
-| stores        | `object`                         | Generated fields's stores.                                                                                        |
+| Prop            | Type                              | Description                                                                                                       |
+| --------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| model           | `Readable<T>`                     | Form's data. Will be passed to onSubmit handler                                                                   |
+| options         | `readonly ZodFormStoreOptions<T>` | Form settings. Should not be update                                                                               |
+| triggerSubmit   | `() => Promise<void>`             | Function to start parsing, validating and submit the form's data                                                  |
+| setupAutoSubmit | `(delay: number) => Unsubscriber` | Setup auto submit on every change of the model                                                                    |
+| reset           | `() => void`                      | Function to reset the form to original state.                                                                     |
+| submitting      | `Readable<boolean>`               | True of submitting the form.                                                                                      |
+| error           | `Readable<string>`                | Error message returned from `onSubmit` handler, or custom validation message.                                     |
+| errors          | `Readable<string[]>`              | Array of string contains all error messages (including fields's errors and error return from `onSubmit` handler). |
+| dirty           | `Readable<boolean>`               | Indicate if the form is edited or submitted.                                                                      |
+| valid           | `Readable<boolean>`               | Indicate if the form is valid.                                                                                    |
+| fields          | `object`                          | Generated fields's functions.                                                                                     |
+| stores          | `object`                          | Generated fields's stores.                                                                                        |
 
 ### Generated stores's props
 
 | Prop                          | Type                       | Description                                |
 | ----------------------------- | -------------------------- | ------------------------------------------ |
-| stores._`fieldname`_\_value   | `Readable<T['fieldname']>` | Readable store holding field's value       |
-| stores._`fieldname`_\_touched | `Readable<boolean>`        | The field have been touched or not         |
-| stores._`fieldname`_\_dirty   | `Readable<boolean>`        | The field value been changed or not        |
-| stores._`fieldname`_\_error   | `Readable<string>`         | The field validation error message, if any |
-| stores._`fieldname`_\_valid   | `Readable<boolean>`        | The field value is valid or not            |
+| stores._`fieldName`_\_value   | `Readable<T['fieldName']>` | Readable store holding field's value       |
+| stores._`fieldName`_\_touched | `Readable<boolean>`        | The field have been touched or not         |
+| stores._`fieldName`_\_dirty   | `Readable<boolean>`        | The field value been changed or not        |
+| stores._`fieldName`_\_error   | `Readable<string>`         | The field validation error message, if any |
+| stores._`fieldName`_\_valid   | `Readable<boolean>`        | The field value is valid or not            |
 
 ### Generated field's functions
 
 | Prop                              | Type                                         | Description                       |
 | --------------------------------- | -------------------------------------------- | --------------------------------- |
-| fields._`fieldname`_.updateValue  | `(updater: Updater<T['fieldname']>) => void` | Function to update field's value  |
-| stores._`fieldname`_.setValue     | `(val: T['fieldname']) => void`              | Function to set field's value     |
-| stores._`fieldname`_.handleChange | `(val: unknown) => void`                     | Callback to update field's value  |
-| stores._`fieldname`_.handleBlur   | `() => void`                                 | Callback to mark field as touched |
-| stores._`fieldname`_.reset        | `() => void`                                 | Reset field to original state     |
-| stores._`fieldname`_.setError     | `(msg: string) => void`                      | Manually set field error          |
-| stores._`fieldname`_.setTouched   | `(val: boolean) => void`                     | Manually set touched state        |
+| fields._`fieldName`_.updateValue  | `(updater: Updater<T['fieldName']>) => void` | Function to update field's value  |
+| stores._`fieldName`_.setValue     | `(val: T['fieldName']) => void`              | Function to set field's value     |
+| stores._`fieldName`_.handleChange | `(val: unknown) => void`                     | Callback to update field's value  |
+| stores._`fieldName`_.handleBlur   | `() => void`                                 | Callback to mark field as touched |
+| stores._`fieldName`_.reset        | `() => void`                                 | Reset field to original state     |
+| stores._`fieldName`_.setError     | `(msg: string) => void`                      | Manually set field error          |
+| stores._`fieldName`_.setTouched   | `(val: boolean) => void`                     | Manually set touched state        |
 
 ## Features
 
 - Use Svelte native stores
 - Fast: only update what changed, and you only subscribe to what you need
-- Minimal - only **~1.55Kb** in size (gzipped)
 - Build-in validation using Zod
 - TypeScript
+- Minimal ![bundlejs](https://deno.bundlejs.com/?q=@nerd-coder/svelte-zod-form&badge=)
 
 ## Extra
 
