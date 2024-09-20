@@ -6,6 +6,8 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: 🛎 Checkout
         uses: actions/checkout@v3
@@ -29,3 +31,13 @@ jobs:
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: ⛑ Build
+        run: pnpm build
+      - name: 🚀 Publish to JSR
+        run: pnpm publish:jsr
+      - name: 🚀 Publish to NPM
+        uses: JS-DevTools/npm-publish@v3
+        with: { token: '${{ secrets.NPM_TOKEN }}' }
+      - name: 🚀 Publish to GitHub
+        uses: dev-build-deploy/release-me@v0.17.0
+        with: { token: '${{ github.token }}' }
