@@ -38,7 +38,8 @@ jobs:
         run: pnpm publish:jsr
       - name: 🚀 Publish to NPM
         uses: JS-DevTools/npm-publish@v3
+        id: npm-publish
         with: { token: '${{ secrets.NPM_TOKEN }}' }
       - name: 🚀 Publish to GitHub
         uses: dev-build-deploy/release-me@v0.17.0
-        with: { token: '${{ github.token }}' }
+        with: { token: '${{ github.token }}', version: '${{ steps.npm-publish.outputs.version }}' }

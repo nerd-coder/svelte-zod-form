@@ -57,10 +57,7 @@
         "infile": "CHANGELOG.md"
       },
       "@release-it/bumper": {
-        "out": [
-          "jsr.json",
-          ".github/release.yml"
-        ]
+        "out": "jsr.json"
       }
     }
   },
