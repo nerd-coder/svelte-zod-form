@@ -1,11 +1,11 @@
 # 🌵 Svelte Zod Form
 
-[![JSR](https://jsr.io/badges/@nerd-coder/svelte-zod-form)](https://jsr.io/@nerd-coder/svelte-zod-form)
-![NPM](https://img.shields.io/npm/v/%40nerd-coder%2Fsvelte-zod-form?logo=npm&labelColor=%23CB3837&color=%23213949)
-[![.github/workflows/main.yaml](https://github.com/nerd-coder/svelte-zod-form/actions/workflows/main.yaml/badge.svg)](https://github.com/nerd-coder/svelte-zod-form/actions/workflows/main.yaml)
-![license](https://img.shields.io/github/license/nerd-coder/svelte-zod-form)
-![bundlejs](https://deno.bundlejs.com/?q=@nerd-coder/svelte-zod-form&badge=)
-[![codecov](https://codecov.io/gh/nerd-coder/svelte-zod-form/branch/main/graph/badge.svg?token=60IHHKQJ1Y)](https://codecov.io/gh/nerd-coder/svelte-zod-form)
+[![jsr]][jsr-link]
+[![npm]][npm-link]
+[![workflow]][workflow-link]
+![license]
+[![bundle]][bundle-link]
+[![codecov]][codecov-link]
 
 Building forms in Svelte with breeze, using [Zod](https://zod.dev/)
 
@@ -169,21 +169,34 @@ const form = new ZodFormStore(schema, {
 
 - Use Svelte native stores
 - Fast: only update what changed, and you only subscribe to what you need
-- Build-in validation using Zod
+- Validation using Zod (Peer dependencies)
 - TypeScript
-- Minimal ![bundlejs](https://deno.bundlejs.com/?q=@nerd-coder/svelte-zod-form&badge=)
+- Minimal [![bundle]][bundle-link]
 
 ## Extra
 
-Why the cactus?
+Why the cactus 🌵?
 
-\> For it resilience
+\> For its resilience
 
 ## TODO
 
 - More tests
-- Support Array
+- Support nested object
+- Support array
 
 ## Contributions
 
 Any contributions are highly appreciate, please make a pull-request. If you would like to discuses a new feature, please create an issue first.
+
+[jsr]: https://jsr.io/badges/@nerd-coder/svelte-zod-form
+[jsr-link]: https://jsr.io/@nerd-coder/svelte-zod-form
+[npm]: https://img.shields.io/npm/v/%40nerd-coder%2Fsvelte-zod-form?logo=npm&labelColor=%23CB3837&color=%23213949
+[npm-link]: https://www.npmjs.com/package/@nerd-coder/svelte-zod-form
+[workflow]: https://github.com/nerd-coder/svelte-zod-form/actions/workflows/main.yaml/badge.svg
+[workflow-link]: https://github.com/nerd-coder/svelte-zod-form/actions/workflows/main.yaml
+[bundle]: https://badgen.net/bundlephobia/minzip/@nerd-coder/svelte-zod-form?icon=packagephobia&label=bundlephobia
+[bundle-link]: https://bundlephobia.com/package/@nerd-coder/svelte-zod-form
+[codecov]: https://codecov.io/gh/nerd-coder/svelte-zod-form/branch/main/graph/badge.svg?token=60IHHKQJ1Y
+[codecov-link]: https://codecov.io/gh/nerd-coder/svelte-zod-form
+[license]: https://img.shields.io/github/license/nerd-coder/svelte-zod-form
