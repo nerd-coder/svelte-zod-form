@@ -1,5 +1,4 @@
 import { writable, type Readable, type Updater, derived } from 'svelte/store'
-import { debounce } from 'radash'
 import type { z } from 'zod'
 
 import { getErrorMessage, toReadable } from './utils.js'
@@ -9,14 +8,10 @@ import { getErrorMessage, toReadable } from './utils.js'
  *
  * @see {@link ZodFormStore}
  * @template K Name of the field
- * @template A Zod's schema type of the field
- * @template O Type of the field
+ * @template A Zod's parent schema type of the field
+ * @template O Type of the parent data
  */
-export class ZodFieldStore<
-  K extends Extract<keyof O, string>,
-  A extends z.ZodRawShape = z.ZodRawShape,
-  O = A,
-> {
+export class ZodFieldStore<K extends Extract<keyof O, string>, A extends z.ZodRawShape, O = A> {
   /**
    * Field name
    */
@@ -73,8 +68,7 @@ export class ZodFieldStore<
   constructor(
     parentSchema: z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>,
     name: K,
-    initialValue?: unknown,
-    ms = 0
+    initialValue?: unknown
   ) {
     if (!(name in parentSchema.shape)) throw new Error('Invalid field name')
 
@@ -84,26 +78,19 @@ export class ZodFieldStore<
     const error = writable('')
     const value = writable<O[K]>()
 
-    const setError = ms > 0 ? debounce({ delay: ms }, error.set) : error.set
-    const setTouched = ms > 0 ? debounce({ delay: ms }, touched.set) : touched.set
-    const setDirty = ms > 0 ? debounce({ delay: ms }, dirty.set) : dirty.set
-
     const schema = parentSchema.shape[name as keyof A]
-    const handleError = (e: unknown) => setError(getErrorMessage(e))
+    const handleError = (e: unknown) => error.set(getErrorMessage(e))
     try {
       initialValue = schema.parse(initialValue)
     } catch (e) {
-      handleError(e)
+      error.set(getErrorMessage(e))
     }
-    const _resetValue = () => value.set(initialValue as O[K])
+    const resetValue = () => value.set(initialValue as O[K])
 
-    _resetValue()
-
-    const _setValue = ms > 0 ? debounce({ delay: ms }, value.set) : value.set
-    const _updateValue = ms > 0 ? debounce({ delay: ms }, value.update) : value.update
+    resetValue()
 
     const handleChange = (e: unknown) => {
-      setError('')
+      error.set('')
       let nextVal = e
       if (e instanceof Event)
         if (e instanceof CustomEvent)
@@ -125,25 +112,25 @@ export class ZodFieldStore<
         handleError(e)
       }
 
-      _setValue(nextVal as O[K])
-      setTouched(true)
-      setDirty(true)
+      value.set(nextVal as O[K])
+      touched.set(true)
+      dirty.set(true)
     }
     const handleSetValue = (v: O[K]) => {
-      setError('')
+      error.set('')
       if (schema)
         try {
-          _setValue(schema.parse(v))
+          value.set(schema.parse(v))
         } catch (e) {
           handleError(e)
         }
-      else _setValue(v)
-      setTouched(true)
-      setDirty(true)
+      else value.set(v)
+      touched.set(true)
+      dirty.set(true)
     }
     const handleUpdateValue = (updater: Updater<O[K]>) => {
       const safeUpdater: typeof updater = v => {
-        setError('')
+        error.set('')
         const updatedVal = updater(v)
         if (schema)
           try {
@@ -153,18 +140,10 @@ export class ZodFieldStore<
           }
         return updatedVal
       }
-      _updateValue(safeUpdater)
-      setTouched(true)
-      setDirty(true)
+      value.update(safeUpdater)
+      touched.set(true)
+      dirty.set(true)
     }
-    const handleBlur = () => setTouched(true)
-    const handleReset = () => {
-      touched.set(false)
-      dirty.set(false)
-      error.set('')
-      _resetValue()
-    }
-
     this.name = name
     // Stores
     this.value = toReadable(value)
@@ -176,9 +155,14 @@ export class ZodFieldStore<
     this.handleChange = handleChange
     this.updateValue = handleUpdateValue
     this.setValue = handleSetValue
-    this.handleBlur = handleBlur
-    this.reset = handleReset
-    this.setError = setError
-    this.setTouched = setTouched
+    this.handleBlur = () => touched.set(true)
+    this.setError = (e: string) => error.set(e)
+    this.setTouched = (v: boolean) => touched.set(v)
+    this.reset = () => {
+      touched.set(false)
+      dirty.set(false)
+      error.set('')
+      resetValue()
+    }
   }
 }

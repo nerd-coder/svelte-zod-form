@@ -1,6 +1,6 @@
-import { derived, get, writable, type Readable } from 'svelte/store'
+import { debounce, pick, zip } from 'radash'
+import { derived, get, writable, type Readable, type Unsubscriber } from 'svelte/store'
 import { ZodEffects, ZodError, type z } from 'zod'
-import { pick, zip, debounce } from 'radash'
 
 import { ZodFieldStore } from './ZodFieldStore.js'
 import { getErrorMessage, toReadable } from './utils.js'
@@ -18,20 +18,6 @@ interface ICreateFormOptions<T> {
    * Should return nothing, or an `string` contain error message
    */
   onSubmit?: (v: T) => Promise<void | string> | string | void
-  /**
-   * Auto trigger submit when any data changed, after the delay in `ms`.
-   * Passing `0` or `undefined` to disabled.
-   *
-   * @default undefined
-   */
-  autoSubmitAfter?: number
-  /**
-   * Debounce the value update, in `ms`.
-   * Passing falsy value (`0` or `undefined`) to disabled.
-   *
-   * @default undefined
-   */
-  debounceDelay?: number
   /** Print debug messages */
   debug?: boolean
 }
@@ -39,10 +25,10 @@ interface ICreateFormOptions<T> {
 /**
  * Instance that hold all our form's state, as Svelte's Store
  *
- * @template A Zod's schema for data in the form
- * @template O Type of data in the form
+ * @template A Input Zod schema for data in the form
+ * @template O Output type. Represents the type of data in the form
  */
-export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
+export class ZodFormStore<A extends z.ZodRawShape, O extends object> {
   /** Form's data. Will be passed to onSubmit handler */
   readonly model: Readable<O>
   /** Form settings. Should not be update */
@@ -51,18 +37,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
   /**
    * Generated fields's functions
    */
-  fields: {
-    [K in Extract<keyof O, string>]: Pick<
-      ZodFieldStore<K, A, O>,
-      | 'updateValue'
-      | 'setValue'
-      | 'handleChange'
-      | 'handleBlur'
-      | 'reset'
-      | 'setError'
-      | 'setTouched'
-    >
-  }
+  fields: { [K in Extract<keyof O, string>]: ZodFieldStore<K, A, O> }
 
   /** Generated fields's stores */
   // prettier-ignore
@@ -112,7 +87,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
 
   constructor(
     /** Zod's schema for data in the form. Should be a `ZodObject`. */
-    schema:
+    public schema:
       | z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>
       | z.ZodEffects<z.ZodObject<A, z.UnknownKeysParam, z.ZodTypeAny, O>>,
     /** Additional configuration */
@@ -134,8 +109,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
         new ZodFieldStore(
           schema instanceof ZodEffects ? schema.innerType() : schema,
           name as Extract<keyof O, string>,
-          this.options.initialValue?.[name as keyof O],
-          this.options.debounceDelay
+          this.options.initialValue?.[name as keyof O]
         )
     )
 
@@ -184,24 +158,6 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
       fieldStores.forEach(f => f.reset())
     }
 
-    if (this.options.autoSubmitAfter && this.options.autoSubmitAfter > 0) {
-      const debouncedTriggerSubmit = debounce({ delay: this.options.autoSubmitAfter }, () => {
-        if (this.options.debug) console.debug('⏱️ Auto submitting...')
-        triggerSubmit()
-      })
-      let prevModel: O | null = null
-      model.subscribe(nextModel => {
-        if (prevModel === null) {
-          prevModel = nextModel
-          return
-        }
-        if (prevModel === nextModel) return
-
-        prevModel = nextModel
-        debouncedTriggerSubmit()
-      })
-    }
-
     type FKey = keyof ZodFieldStore<Extract<keyof O, string>, A, O>
     const handlerFuncNames: Array<FKey> = [
       'updateValue',
@@ -243,5 +199,34 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
     const field = this.fields[currentPath as Extract<keyof O, string>]
     if (!field) return
     field.setError(errorMessage)
+  }
+
+  /**
+   * Setup auto submit on every change of the model.
+   * If the model changed, it will be submit in last `delay` milliseconds.
+   *
+   * @param delay Time in milliseconds to wait before submitting the form.
+   */
+  setupAutoSubmit(delay: number): Unsubscriber {
+    const debouncedTriggerSubmit = debounce({ delay }, () => {
+      if (this.options.debug) console.debug('⏱️ Auto submitting...')
+      this.triggerSubmit()
+    })
+    let prevModel: O | null = null
+
+    // Subscribe to the model and on every change, debouncedTriggerSubmit will be called
+    const sub = this.model.subscribe(nextModel => {
+      // If it's the first time here, just save the model and return
+      if (prevModel === null) {
+        prevModel = nextModel
+        return
+      }
+      // If the model didn't change, just return
+      if (prevModel === nextModel) return
+
+      prevModel = nextModel
+      debouncedTriggerSubmit()
+    })
+    return sub
   }
 }
