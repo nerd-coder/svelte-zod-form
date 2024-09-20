@@ -3,7 +3,7 @@ import { ZodEffects, ZodError, type z } from 'zod'
 import { pick, zip, debounce } from 'radash'
 
 import { ZodFieldStore } from './ZodFieldStore.js'
-import { getErrorMessage, toReadable, trurthly } from './utils.js'
+import { getErrorMessage, toReadable } from './utils.js'
 
 /**
  * Settings for ZodFormStore
@@ -38,6 +38,9 @@ interface ICreateFormOptions<T> {
 
 /**
  * Instance that hold all our form's state, as Svelte's Store
+ *
+ * @template A Zod's schema for data in the form
+ * @template O Type of data in the form
  */
 export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
   /** Form's data. Will be passed to onSubmit handler */
@@ -142,7 +145,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
     )
     const fieldErrors = derived(
       fieldStores.map(z => z.error),
-      e => e.filter(trurthly)
+      e => e.filter(Boolean)
     )
 
     const triggerSubmit = async () => {
@@ -228,14 +231,14 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
     this.error = toReadable(formError)
     this.dirty = derived([dirty, ...fieldStores.map(a => a.dirty)], a => a.some(b => b))
     this.errors = derived([fieldErrors, formError], errors =>
-      errors.flatMap(z => z).filter(trurthly)
+      errors.flatMap(z => z).filter(Boolean)
     )
     this.model = model
     this.valid = derived(this.errors, e => !e.length)
   }
 
   /** Set the form's error message manually */
-  setError(errorMessage: string, path: (string | number)[]) {
+  setError(errorMessage: string, path: (string | number)[]): void {
     const [currentPath] = path
     const field = this.fields[currentPath as Extract<keyof O, string>]
     if (!field) return

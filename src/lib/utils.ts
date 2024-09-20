@@ -1,8 +1,7 @@
-import { derived, type Writable } from 'svelte/store'
+import { derived, type Readable, type Writable } from 'svelte/store'
 import { ZodError } from 'zod'
 
-export const trurthly = (z: string) => !!z
-export const toReadable = <T>(w: Writable<T>) => derived(w, a => a)
+export const toReadable = <T>(w: Writable<T>): Readable<T> => derived(w, a => a)
 
 export const getErrorMessage = (e: unknown): string => {
   if (e instanceof ZodError)

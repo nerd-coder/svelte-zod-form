@@ -4,6 +4,14 @@ import type { z } from 'zod'
 
 import { getErrorMessage, toReadable } from './utils.js'
 
+/**
+ * Instance that hold all our field's state, as Svelte's Store
+ *
+ * @see {@link ZodFormStore}
+ * @template K Name of the field
+ * @template A Zod's schema type of the field
+ * @template O Type of the field
+ */
 export class ZodFieldStore<
   K extends Extract<keyof O, string>,
   A extends z.ZodRawShape = z.ZodRawShape,

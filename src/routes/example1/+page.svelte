@@ -10,7 +10,7 @@
   const form = new ZodFormStore(loginSchema, {
     debug: true,
     onSubmit: async v => {
-      await sleep(2000) // fake delay to simutate api call
+      await sleep(2000) // fake delay to simulate api call
       console.log('Submitted values:', v)
     },
   })
@@ -61,7 +61,7 @@
   </fieldset>
 
   <button type="submit" disabled={!$valid || $submitting}>
-    {$submitting ? 'Submiting...' : 'Submit'}
+    {$submitting ? 'Submitting...' : 'Submit'}
   </button>
   <button type="reset">Reset</button>
 </form>
