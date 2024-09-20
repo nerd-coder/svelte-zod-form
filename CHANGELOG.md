@@ -1,5 +1,16 @@
 
 
+## [1.3.0](https://github.com/nerd-coder/svelte-zod-form/compare/1.2.4...1.3.0) (2024-09-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* make auto submit opt in
+
+### Features
+
+* make auto submit opt in ([3d353dd](https://github.com/nerd-coder/svelte-zod-form/commit/3d353dd7e1f42da620a3639b7961072343d5233a))
+
 ## [1.2.4](https://github.com/nerd-coder/svelte-zod-form/compare/1.2.3...1.2.4) (2024-09-20)
 
 
