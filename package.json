@@ -42,7 +42,7 @@
     "release": "release-it",
     "prepare": "svelte-kit sync",
     "publish:jsr": "jsr publish",
-    "publish:npm": "npm publish",
+    "publish:github": "changelogen gh release",
     "postinstall": "lefthook install"
   },
   "release-it": {
@@ -52,7 +52,7 @@
     "plugins": {
       "@release-it/conventional-changelog": {
         "preset": {
-          "name": "angular"
+          "name": "conventionalcommits"
         },
         "infile": "CHANGELOG.md"
       },
@@ -81,6 +81,7 @@
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "@vitest/coverage-v8": "^1.0.4",
+    "changelogen": "^0.5.7",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.35.1",

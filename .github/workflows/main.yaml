@@ -34,12 +34,14 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       - name: ⛑ Build
         run: pnpm build
-      - name: 🚀 Publish to JSR
-        run: pnpm publish:jsr
       - name: 🚀 Publish to NPM
         uses: JS-DevTools/npm-publish@v3
-        id: npm-publish
+        id: publish
         with: { token: '${{ secrets.NPM_TOKEN }}' }
+      - name: 🚀 Publish to JSR
+        if: ${{ steps.publish.outputs.type }}
+        run: pnpm publish:jsr
       - name: 🚀 Publish to GitHub
-        uses: dev-build-deploy/release-me@v0.17.0
-        with: { token: '${{ github.token }}', version: '${{ steps.npm-publish.outputs.version }}' }
+        if: ${{ steps.publish.outputs.type }}
+        run: pnpm publish:github
+        env: { GITHUB_TOKEN: ${{ github.token }} }
