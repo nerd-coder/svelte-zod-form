@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [sveltekit()],
   test: {
     coverage: {
+      include: ['src/lib/**'],
       reporter: ['text', 'html', 'clover', 'json-summary', 'json'],
       thresholds: {
         lines: 60,
