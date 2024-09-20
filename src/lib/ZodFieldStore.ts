@@ -134,7 +134,7 @@ export class ZodFieldStore<
       setDirty(true)
     }
     const handleUpdateValue = (updater: Updater<O[K]>) => {
-      const safeUpdater: typeof updater = (v) => {
+      const safeUpdater: typeof updater = v => {
         setError('')
         const updatedVal = updater(v)
         if (schema)
@@ -163,7 +163,7 @@ export class ZodFieldStore<
     this.touched = toReadable(touched)
     this.dirty = toReadable(dirty)
     this.error = toReadable(error)
-    this.valid = derived(error, (e) => !e)
+    this.valid = derived(error, e => !e)
     // Handlers
     this.handleChange = handleChange
     this.updateValue = handleUpdateValue

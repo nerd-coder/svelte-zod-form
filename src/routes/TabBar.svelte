@@ -9,11 +9,11 @@
 
   const [send, receive] = crossfade({
     duration: 500,
-    fallback: (node) => fade(node, { duration: 200 }),
+    fallback: node => fade(node, { duration: 200 }),
   })
 
   $: path = $page.url.pathname
-  $: tabs = data.map((z) => ({ ...z, active: exact ? path === z.href : path.startsWith(z.href) }))
+  $: tabs = data.map(z => ({ ...z, active: exact ? path === z.href : path.startsWith(z.href) }))
 </script>
 
 <nav>

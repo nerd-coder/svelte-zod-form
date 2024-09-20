@@ -2,56 +2,64 @@
   "name": "@nerd-coder/svelte-zod-form",
   "version": "1.2.2",
   "description": "Building forms with breeze, using Svelte + Zod",
-  "packageManager": "pnpm@8.12.1",
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-	"svelte": "./dist/index.mjs",
   "type": "module",
-  "publishConfig": {
-    "access": "public"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "svelte": "./dist/index.mjs"
-    }
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "dev": "vite dev",
-    "build": "rollup -c",
-    "prettier": "prettier --write .",
-    "lint": "eslint .",
-    "check": "svelte-check",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
-    "release": "release-it",
-    "prepare": "svelte-kit sync"
-  },
+  "packageManager": "pnpm@9.10.0",
   "repository": "github:nerd-coder/svelte-zod-form",
   "keywords": [
     "svelte",
     "zod",
     "form"
   ],
-  "author": "Toanzzz",
+  "author": "NerdCoder",
   "license": "MIT",
   "bugs": "https://github.com/nerd-coder/svelte-zod-form/issues",
   "homepage": "https://github.com/nerd-coder/svelte-zod-form#readme",
+  "main": "dist/lib/index.mjs",
+  "module": "dist/lib/index.mjs",
+  "types": "dist/lib/index.d.ts",
+  "svelte": "./dist/lib/index.mjs",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    "require": "./dist/lib/index.cjs",
+    "import": "./dist/lib/index.mjs",
+    "types": "./dist/lib/index.d.ts"
+  },
+  "files": [
+    "./dist/index.cjs",
+    "./dist/index.mjs",
+    "./dist/index.d.ts"
+  ],
+  "scripts": {
+    "dev": "vite dev",
+    "build": "pkgroll",
+    "format": "prettier --write .",
+    "lint": "eslint .",
+    "check": "svelte-check",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "release": "release-it",
+    "prepare": "svelte-kit sync",
+    "publish:jsr": "jsr publish",
+    "publish:npm": "npm publish",
+    "postinstall": "lefthook install"
+  },
   "release-it": {
-    "hooks": {
-      "before:init": [
-        "pnpm run lint",
-        "pnpm run check",
-        "pnpm test -- --run",
-        "pnpm run build"
-      ]
-    },
     "npm": {
-      "publish": true
+      "publish": false
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": {
+          "name": "angular"
+        },
+        "infile": "CHANGELOG.md"
+      },
+      "@release-it/bumper": {
+        "in": "jsr.json",
+        "out": "jsr.json"
+      }
     }
   },
   "dependencies": {
@@ -64,6 +72,8 @@
     "zod": "^3.0.0"
   },
   "devDependencies": {
+    "@release-it/bumper": "^6.0.1",
+    "@release-it/conventional-changelog": "^8.0.2",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.5",
     "@sveltejs/adapter-auto": "^3.0.0",
@@ -76,6 +86,9 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.35.1",
     "happy-dom": "^12.10.3",
+    "jsr": "^0.13.2",
+    "lefthook": "^1.7.15",
+    "pkgroll": "^2.5.0",
     "prettier": "^3.1.1",
     "prettier-plugin-svelte": "^3.1.2",
     "release-it": "^17.0.1",

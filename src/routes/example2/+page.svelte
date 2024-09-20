@@ -10,7 +10,7 @@
   const form = new ZodFormStore(loginSchema, {
     debug: true,
     autoSubmitAfter: 300,
-    onSubmit: async (v) => {
+    onSubmit: async v => {
       await sleep(2000) // fake delay to simutate api call
       console.log('Submitted values:', v)
     },

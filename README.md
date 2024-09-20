@@ -36,7 +36,7 @@ const loginSchema = z.object({
 Then pass the schema to `ZodFormStore`:
 
 ```ts
-const form = new ZodFormStore(loginSchema, { onSubmit: (v) => console.log('Submitted values:', v) })
+const form = new ZodFormStore(loginSchema, { onSubmit: v => console.log('Submitted values:', v) })
 ```
 
 All the field's handler, value will be generated and typed for you:

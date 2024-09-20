@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { get } from 'svelte/store'
 
-import { ZodFormStore } from '../src/lib'
+import { ZodFormStore } from '../src/lib/index.ts'
 
 const schema = z.object({
   name: z.string(),

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { get } from 'svelte/store'
 
-import { ZodFormStore } from '../src/lib'
+import { ZodFormStore } from '../src/lib/index.ts'
 
 const schema = z
   .object({
@@ -154,7 +154,7 @@ test('should valid', () => {
       pass: '1234',
       pass_verify: '1234',
     },
-    onSubmit: async (v) => console.log('submitted', v),
+    onSubmit: async v => console.log('submitted', v),
   })
 
   const spy = vi.spyOn(form.options, 'onSubmit')
@@ -172,7 +172,7 @@ test('should show verify password error', () => {
       pass: '1234',
       pass_verify: '12345',
     },
-    onSubmit: async (v) => console.log('submitted', v),
+    onSubmit: async v => console.log('submitted', v),
   })
 
   form.triggerSubmit()
@@ -207,7 +207,7 @@ test('should not trigger onSubmit handler if there is any field error(s)', () =>
       pass: '1234',
       pass_verify: '1234',
     },
-    onSubmit: async (v) => console.log('submitted', v),
+    onSubmit: async v => console.log('submitted', v),
   })
 
   const spy = vi.spyOn(form.options, 'onSubmit')
@@ -225,7 +225,7 @@ test('should do nothing if setting the wrong field', () => {
       pass: '1234',
       pass_verify: '1234',
     },
-    onSubmit: async (v) => console.log('submitted', v),
+    onSubmit: async v => console.log('submitted', v),
   })
 
   form.setError('failed', ['abc'])

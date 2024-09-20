@@ -127,7 +127,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
       schema instanceof ZodEffects ? schema.innerType().shape : schema.shape
     )
     const fieldStores = fieldNames.map(
-      (name) =>
+      name =>
         new ZodFieldStore(
           schema instanceof ZodEffects ? schema.innerType() : schema,
           name as Extract<keyof O, string>,
@@ -137,17 +137,17 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
     )
 
     const model = derived(
-      fieldStores.map((z) => z.value),
-      (z) => Object.fromEntries(zip(fieldNames, z)) as O
+      fieldStores.map(z => z.value),
+      z => Object.fromEntries(zip(fieldNames, z)) as O
     )
     const fieldErrors = derived(
-      fieldStores.map((z) => z.error),
-      (e) => e.filter(trurthly)
+      fieldStores.map(z => z.error),
+      e => e.filter(trurthly)
     )
 
     const triggerSubmit = async () => {
       dirty.set(true)
-      fieldStores.forEach((f) => f.setTouched(true))
+      fieldStores.forEach(f => f.setTouched(true))
 
       if (!this.options.onSubmit) return
 
@@ -178,7 +178,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
       dirty.set(false)
       submitting.set(false)
       formError.set('')
-      fieldStores.forEach((f) => f.reset())
+      fieldStores.forEach(f => f.reset())
     }
 
     if (this.options.autoSubmitAfter && this.options.autoSubmitAfter > 0) {
@@ -187,7 +187,7 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
         triggerSubmit()
       })
       let prevModel: O | null = null
-      model.subscribe((nextModel) => {
+      model.subscribe(nextModel => {
         if (prevModel === null) {
           prevModel = nextModel
           return
@@ -210,13 +210,13 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
       'setTouched',
     ]
     this.fields = Object.fromEntries(
-      fieldStores.map((z) => [z.name, pick(z, handlerFuncNames)])
+      fieldStores.map(z => [z.name, pick(z, handlerFuncNames)])
     ) as unknown as typeof this.fields
     this.stores = Object.fromEntries(
-      fieldStores.flatMap((fieldStore) =>
+      fieldStores.flatMap(fieldStore =>
         Object.keys(fieldStore)
-          .filter((key) => key !== 'name' && !handlerFuncNames.includes(key as FKey))
-          .map((prop) => [
+          .filter(key => key !== 'name' && !handlerFuncNames.includes(key as FKey))
+          .map(prop => [
             `${String(fieldStore.name)}_${prop}`,
             fieldStore[prop as keyof typeof fieldStore],
           ])
@@ -226,12 +226,12 @@ export class ZodFormStore<A extends z.ZodRawShape = z.ZodRawShape, O = A> {
     this.reset = handleReset
     this.submitting = toReadable(submitting)
     this.error = toReadable(formError)
-    this.dirty = derived([dirty, ...fieldStores.map((a) => a.dirty)], (a) => a.some((b) => b))
-    this.errors = derived([fieldErrors, formError], (errors) =>
-      errors.flatMap((z) => z).filter(trurthly)
+    this.dirty = derived([dirty, ...fieldStores.map(a => a.dirty)], a => a.some(b => b))
+    this.errors = derived([fieldErrors, formError], errors =>
+      errors.flatMap(z => z).filter(trurthly)
     )
     this.model = model
-    this.valid = derived(this.errors, (e) => !e.length)
+    this.valid = derived(this.errors, e => !e.length)
   }
 
   /** Set the form's error message manually */

@@ -13,6 +13,7 @@ export function polyfillDOM() {
     'HTMLUnknownElement',
     'customElements',
   ]
+  // @ts-expect-error
   for (const key of keys) global[key] = window[key]
   self.requestAnimationFrame = setTimeout
 }

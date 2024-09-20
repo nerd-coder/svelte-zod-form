@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { get } from 'svelte/store'
-import { ZodFieldStore } from '../src/lib/ZodFieldStore'
-import { polyfillDOM } from './test-utils'
+import { ZodFieldStore } from '../src/lib/ZodFieldStore.ts'
+import { polyfillDOM } from './test-utils.ts'
 
 describe('ZodFieldStore_class', () => {
   beforeEach(polyfillDOM)

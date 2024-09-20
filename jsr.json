@@ -1,0 +1,9 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@nerd-coder/svelte-zod-form",
+  "version": "1.2.2",
+  "exports": "./src/lib/index.ts",
+  "publish": {
+    "include": ["src/lib/", "README.md"]
+  }
+}
