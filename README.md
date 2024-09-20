@@ -1,6 +1,8 @@
 # 🌵 Svelte Zod Form
 
-[![version](https://img.shields.io/npm/v/@nerd-coder/svelte-zod-form)](https://www.npmjs.com/package/@nerd-coder/svelte-zod-form)
+[![JSR](https://jsr.io/badges/@nerd-coder/svelte-zod-form)](https://jsr.io/@nerd-coder/svelte-zod-form)
+![NPM](https://img.shields.io/npm/v/%40nerd-coder%2Fviem-rx?logo=npm&labelColor=%23CB3837&color=%23213949)
+[![.github/workflows/main.yaml](https://github.com/nerd-coder/svelte-zod-form/actions/workflows/main.yaml/badge.svg)](https://github.com/nerd-coder/svelte-zod-form/actions/workflows/main.yaml)
 ![license](https://img.shields.io/github/license/nerd-coder/svelte-zod-form)
 ![bundlejs](https://deno.bundlejs.com/?q=@nerd-coder/svelte-zod-form&badge=)
 [![codecov](https://codecov.io/gh/nerd-coder/svelte-zod-form/branch/main/graph/badge.svg?token=60IHHKQJ1Y)](https://codecov.io/gh/nerd-coder/svelte-zod-form)
