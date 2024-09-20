@@ -44,4 +44,4 @@ jobs:
       - name: 🚀 Publish to GitHub
         if: ${{ steps.publish.outputs.type }}
         run: pnpm publish:github
-        env: { GITHUB_TOKEN: ${{ github.token }} }
+        env: { GITHUB_TOKEN: '${{ github.token }}' }
