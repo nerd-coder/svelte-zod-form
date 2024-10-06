@@ -40,10 +40,9 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "release": "release-it",
-    "prepare": "svelte-kit sync",
+    "prepare": "svelte-kit sync && lefthook install",
     "publish:jsr": "jsr publish",
-    "publish:github": "changelogen gh release",
-    "postinstall": "lefthook install"
+    "publish:github": "changelogen gh release"
   },
   "release-it": {
     "npm": {
