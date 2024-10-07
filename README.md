@@ -16,8 +16,16 @@ Building forms in Svelte with breeze, using [Zod](https://zod.dev/)
 
 ## Installation
 
+[NPM][npm-link]
+
 ```sh
 npm i @nerd-coder/svelte-zod-form
+```
+
+[JSR][jsr-link] (Recommended)
+
+```sh
+npx jsr add @nerd-coder/svelte-zod-form
 ```
 
 ## How to use
