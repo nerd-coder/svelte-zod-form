@@ -17,7 +17,7 @@ export interface ZodFormStoreOptions<T> {
    */
   initialValue?: Partial<T>
   /**
-   * Async callback to handle submmition of the form.
+   * Async callback to handle submission of the form.
    * Should return nothing, or an `string` contain error message
    */
   onSubmit?: (v: T) => Promise<void | string> | string | void

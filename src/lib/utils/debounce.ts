@@ -1,4 +1,4 @@
-export type DebounceFunction<TArgs extends any[]> = {
+export type DebounceFunction<TArgs extends unknown[]> = {
   (...args: TArgs): void
   /**
    * Cancels the debounced function
@@ -23,9 +23,9 @@ export type DebounceFunction<TArgs extends any[]> = {
  * to cancel delayed `func` invocations and a `flush`
  * method to invoke them immediately
  */
-export const debounce = <TArgs extends any[]>(
+export const debounce = <TArgs extends unknown[]>(
   { delay }: { delay: number },
-  func: (...args: TArgs) => any
+  func: (...args: TArgs) => void
 ): DebounceFunction<TArgs> => {
   let timer: number | undefined = undefined
   let active = true
