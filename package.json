@@ -57,6 +57,13 @@
       },
       "@release-it/bumper": {
         "out": "jsr.json"
+      },
+      "hooks": {
+        "before:init": [
+          "npm test",
+          "npm run check",
+          "npm run lint"
+        ]
       }
     }
   },
