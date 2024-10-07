@@ -2,11 +2,11 @@ import { derived, get, writable, type Readable, type Unsubscriber } from 'svelte
 import { ZodEffects, ZodError, type z } from 'zod'
 
 import { ZodFieldStore } from './ZodFieldStore.js'
-import { toReadable } from './utils/toReadable.ts'
-import { getErrorMessage } from './utils/getErrorMessage.ts'
-import { debounce } from './utils/debounce.ts'
-import { pick } from './utils/pick.ts'
-import { zip } from './utils/zip.ts'
+import { toReadable } from './utils/toReadable.js'
+import { getErrorMessage } from './utils/getErrorMessage.js'
+import { debounce } from './utils/debounce.js'
+import { pick } from './utils/pick.js'
+import { zip } from './utils/zip.js'
 
 /**
  * Settings for ZodFormStore
