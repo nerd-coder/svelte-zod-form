@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { sleep } from '$lib/utils/sleep.ts'
   import { ZodFormStore } from '@nerd-coder/svelte-zod-form'
-  import { sleep } from 'radash'
   import { onMount } from 'svelte'
   import { z } from 'zod'
 

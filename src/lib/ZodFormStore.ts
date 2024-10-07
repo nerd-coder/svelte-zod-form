@@ -1,9 +1,12 @@
-import { debounce, pick, zip } from 'radash'
 import { derived, get, writable, type Readable, type Unsubscriber } from 'svelte/store'
 import { ZodEffects, ZodError, type z } from 'zod'
 
 import { ZodFieldStore } from './ZodFieldStore.js'
-import { getErrorMessage, toReadable } from './utils.js'
+import { toReadable } from './utils/toReadable.ts'
+import { getErrorMessage } from './utils/getErrorMessage.ts'
+import { debounce } from './utils/debounce.ts'
+import { pick } from './utils/pick.ts'
+import { zip } from './utils/zip.ts'
 
 /**
  * Settings for ZodFormStore

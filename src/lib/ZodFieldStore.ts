@@ -1,7 +1,8 @@
 import { writable, type Readable, type Updater, derived } from 'svelte/store'
 import type { z } from 'zod'
 
-import { getErrorMessage, toReadable } from './utils.js'
+import { toReadable } from './utils/toReadable.ts'
+import { getErrorMessage } from './utils/getErrorMessage.ts'
 
 /**
  * Instance that hold all our field's state, as Svelte's Store

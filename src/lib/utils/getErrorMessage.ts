@@ -1,7 +1,4 @@
-import { derived, type Readable, type Writable } from 'svelte/store'
 import { ZodError } from 'zod'
-
-export const toReadable = <T>(w: Writable<T>): Readable<T> => derived(w, a => a)
 
 export const getErrorMessage = (e: unknown): string => {
   if (e instanceof ZodError)

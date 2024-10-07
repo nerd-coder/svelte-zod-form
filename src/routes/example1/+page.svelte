@@ -1,7 +1,7 @@
 <script lang="ts">
   import { z } from 'zod'
-  import { sleep } from 'radash'
   import { ZodFormStore } from '@nerd-coder/svelte-zod-form'
+  import { sleep } from '$lib/utils/sleep.ts'
 
   const loginSchema = z.object({
     email: z.string().email(),

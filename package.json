@@ -61,7 +61,6 @@
     }
   },
   "dependencies": {
-    "radash": "^11.0.0",
     "svelte": "^4.2.8",
     "zod": "^3.22.4"
   },
