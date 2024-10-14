@@ -24,7 +24,8 @@
   "exports": {
     "require": "./dist/lib/index.cjs",
     "import": "./dist/lib/index.mjs",
-    "types": "./dist/lib/index.d.ts"
+    "types": "./dist/lib/index.d.ts",
+    "svelte": "./dist/lib/index.mjs"
   },
   "files": [
     "./dist/lib/index.cjs",
