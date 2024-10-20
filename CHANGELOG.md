@@ -1,5 +1,11 @@
 
 
+## [1.6.1](https://github.com/nerd-coder/svelte-zod-form/compare/v1.6.0...v1.6.1) (2024-10-20)
+
+### Bug Fixes
+
+* **typing:** allow pass undefined `initialValue` ([0dfa2b7](https://github.com/nerd-coder/svelte-zod-form/commit/0dfa2b70ac3131d8dc24a9b22e32e6016330d87d))
+
 ## [1.6.0](https://github.com/nerd-coder/svelte-zod-form/compare/v1.5.0...v1.6.0) (2024-10-20)
 
 ### Features
