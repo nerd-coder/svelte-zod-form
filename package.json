@@ -58,14 +58,14 @@
       },
       "@release-it/bumper": {
         "out": "jsr.json"
-      },
-      "hooks": {
-        "before:init": [
-          "npm test",
-          "npm run check",
-          "npm run lint"
-        ]
       }
+    },
+    "hooks": {
+      "before:init": [
+        "npm test -- --run --silent",
+        "npm run check",
+        "npm run lint"
+      ]
     }
   },
   "dependencies": {

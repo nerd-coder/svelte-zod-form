@@ -4,7 +4,6 @@ import { ZodEffects, ZodError, type z } from 'zod'
 import { ZodFieldStore } from './ZodFieldStore.js'
 import { getErrorMessage } from './utils/getErrorMessage.js'
 import { debounce } from './utils/debounce.js'
-import { pick } from './utils/pick.js'
 import { zip } from './utils/zip.js'
 
 /**

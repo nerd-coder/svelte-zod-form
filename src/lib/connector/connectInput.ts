@@ -14,7 +14,7 @@ type TSupportedElement = HTMLInputElement | HTMLTextAreaElement
 export function connectInput<K extends Extract<keyof O, string>, A extends z.ZodRawShape, O = A>(
   node: TSupportedElement,
   param: ZodFieldStore<K, A, O>
-): ActionReturn<ZodFieldStore<K, A, O>, {}> {
+): ActionReturn<ZodFieldStore<K, A, O>> {
   let cleanup = initialize(node, param)
 
   return {
@@ -30,7 +30,7 @@ function initialize<K extends Extract<keyof O, string>, A extends z.ZodRawShape,
   node: TSupportedElement,
   store: ZodFieldStore<K, A, O>
 ) {
-  const { touched, dirty, handleChange, handleBlur } = store
+  const { handleChange, handleBlur } = store
 
   node.addEventListener('input', handleChange)
   node.addEventListener('blur', handleBlur)

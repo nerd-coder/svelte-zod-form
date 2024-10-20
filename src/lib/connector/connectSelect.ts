@@ -12,7 +12,7 @@ type TSupportedElement = HTMLSelectElement
 export function connectSelect<K extends Extract<keyof O, string>, A extends z.ZodRawShape, O = A>(
   node: TSupportedElement,
   param: ZodFieldStore<K, A, O>
-): ActionReturn<ZodFieldStore<K, A, O>, {}> {
+): ActionReturn<ZodFieldStore<K, A, O>> {
   let cleanup = initialize(node, param)
 
   return {

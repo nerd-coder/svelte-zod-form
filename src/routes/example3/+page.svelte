@@ -17,15 +17,7 @@
 
   // We need pull the generated field store out, in order
   // to use the Svelte's "auto subscription" feature "$"
-  const {
-    email_error,
-    email_valid,
-    email_dirty,
-    email_touched,
-    pass_error,
-    pass_dirty,
-    pass_touched,
-  } = form.stores
+  const { email_error, email_touched, pass_error, pass_touched } = form.stores
 
   const { submitting, valid, model } = form
 </script>

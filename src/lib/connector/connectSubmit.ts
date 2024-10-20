@@ -28,8 +28,6 @@ function initialize<A extends z.ZodRawShape, O extends object = A>(
   node: TSupportedElement,
   store: ZodFormStore<A, O>
 ) {
-  const { valid, submitting } = store
-
   // Subscribe to the value store
   return derived([store.valid, store.submitting], ([a, b]) => [a, b]).subscribe(
     ([valid, submitting]) => {
