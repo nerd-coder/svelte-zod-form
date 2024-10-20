@@ -34,7 +34,7 @@ export const debounce = <TArgs extends unknown[]>(
     if (active) {
       clearTimeout(timer)
       timer = setTimeout(() => {
-        active && func(...args)
+        if (active) func(...args)
         timer = undefined
       }, delay)
     } else {

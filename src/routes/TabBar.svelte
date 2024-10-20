@@ -20,7 +20,7 @@
   {#each tabs as { href, title, active }, _ (href)}
     <a {href} data-active={active}>
       {#if active}
-        <div in:receive|local={{ key }} out:send|local={{ key }} />
+        <div in:receive|local={{ key }} out:send|local={{ key }}></div>
       {/if}
       <p>{title}</p>
     </a>
