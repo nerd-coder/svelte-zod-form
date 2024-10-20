@@ -1,5 +1,13 @@
 
 
+## [1.4.3](https://github.com/nerd-coder/svelte-zod-form/compare/v1.4.2...v1.4.3) (2024-10-20)
+
+
+### Bug Fixes
+
+* correct import extension ([23dd49a](https://github.com/nerd-coder/svelte-zod-form/commit/23dd49ad9dba78c6f47fca88f25ddb216c42622a))
+* update typing ([144459d](https://github.com/nerd-coder/svelte-zod-form/commit/144459d4e47c6a7ab534bd795eb14390dab00002))
+
 ## [1.4.2](https://github.com/nerd-coder/svelte-zod-form/compare/v1.4.1...v1.4.2) (2024-10-07)
 
 ## [1.4.1](https://github.com/nerd-coder/svelte-zod-form/compare/v1.4.0...v1.4.1) (2024-10-06)
