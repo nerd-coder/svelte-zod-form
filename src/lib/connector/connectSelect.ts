@@ -28,12 +28,12 @@ function initialize<K extends Extract<keyof O, string>, A extends z.ZodRawShape,
   node: TSupportedElement,
   store: ZodFieldStore<K, A, O>
 ) {
-  const { value, handleChange, handleBlur } = store
+  const { value, handleChange, setValue, handleBlur } = store
   const handleSelectChange = node.multiple
     ? (e: Event) => {
         const elm = e.target as TSupportedElement
         const val = Array.from(elm.selectedOptions).map(a => a.value)
-        handleChange(val)
+        setValue(val as O[K])
       }
     : handleChange
 

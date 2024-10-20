@@ -36,7 +36,7 @@ test('should hold initital values, even if invalid', () => {
 test('should update vaule when changed', () => {
   const form = new ZodFormStore(schema)
   const email = 'me@toan.io'
-  form.fields.email.handleChange(email)
+  form.fields.email.setValue(email)
 
   expect(get(form.stores.email_value)).toBe(email)
 })
@@ -44,7 +44,7 @@ test('should update vaule when changed', () => {
 test('should have error message about email', () => {
   const form = new ZodFormStore(schema)
 
-  form.fields.email.handleChange('abcdef')
+  form.fields.email.setValue('abcdef')
 
   expect(get(form.stores.email_error)).toBe('Invalid email')
 })
@@ -55,8 +55,8 @@ test('should reset', () => {
   expect(get(form.stores.email_value)).toBe(undefined)
   expect(get(form.stores.pass_value)).toBe(undefined)
 
-  form.fields.email.handleChange('abc@mail.com')
-  form.fields.pass.handleChange('123123')
+  form.fields.email.setValue('abc@mail.com')
+  form.fields.pass.setValue('123123')
 
   expect(get(form.stores.email_value)).toBe('abc@mail.com')
   expect(get(form.stores.pass_value)).toBe('123123')
@@ -78,8 +78,8 @@ test('should reset to initial values', () => {
   expect(get(form.stores.email_value)).toBe('abc')
   expect(get(form.stores.pass_value)).toBe('123')
 
-  form.fields.email.handleChange('abc@mail.com')
-  form.fields.pass.handleChange('123123')
+  form.fields.email.setValue('abc@mail.com')
+  form.fields.pass.setValue('123123')
 
   expect(get(form.stores.email_value)).toBe('abc@mail.com')
   expect(get(form.stores.pass_value)).toBe('123123')
@@ -118,7 +118,7 @@ test('should dirty after setting any field', () => {
       pass: '123',
     },
   })
-  form.fields.email.handleChange('abc')
+  form.fields.email.setValue('abc')
   expect(get(form.dirty)).toBe(true)
 })
 
@@ -141,7 +141,7 @@ test('should not dirty after reset', () => {
       pass: '123',
     },
   })
-  form.fields.email.handleChange('abc')
+  form.fields.email.setValue('abc')
   expect(get(form.dirty)).toBe(true)
   form.reset()
   expect(get(form.dirty)).toBe(false)

@@ -99,7 +99,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O extends object> {
     // Form stores
     const submitting = writable(false)
     const dirty = writable(false)
-    const formError = writable<string>()
+    const formError = writable<string>('')
 
     // Fields stores
     const fieldNames = Object.keys(

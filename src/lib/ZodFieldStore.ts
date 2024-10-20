@@ -3,6 +3,11 @@ import type { z } from 'zod'
 
 import { getErrorMessage } from './utils/getErrorMessage.js'
 
+enum ErrorMessages {
+  invalidEvent = 'Invalid param passes to `handleChange`. If you want to pass value directly, please use `setValue` instead',
+  invalidEventTarget = 'Invalid event target. Supported elements are: HTMLInputElement, HTMLSelectElement, HTMLTextAreaElement',
+}
+
 /**
  * Instance that hold all our field's state, as Svelte's Store
  *
@@ -45,9 +50,12 @@ export class ZodFieldStore<K extends Extract<keyof O, string>, A extends z.ZodRa
    */
   setValue: (val: O[K]) => void
   /**
-   * Callback to update field's value
+   * Callback to update field's value.
+   * Should be used in input's `onInput` event
+   *
+   * If you want to pass value directly, please use `setValue` instead
    */
-  handleChange: (e: unknown) => void
+  handleChange: (e: Event) => void
   /**
    * Callback to mark field as touched
    */
@@ -80,31 +88,32 @@ export class ZodFieldStore<K extends Extract<keyof O, string>, A extends z.ZodRa
 
     const schema = parentSchema.shape[name as keyof A]
     const handleError = (e: unknown) => error.set(getErrorMessage(e))
-    try {
-      initialValue = schema.parse(initialValue)
-    } catch (e) {
-      error.set(getErrorMessage(e))
+    const resetValue = () => {
+      value.set(initialValue as O[K])
+      try {
+        const parsed = schema.parse(initialValue)
+        value.set(parsed)
+      } catch (e) {
+        error.set(getErrorMessage(e))
+      }
     }
-    const resetValue = () => value.set(initialValue as O[K])
 
     resetValue()
 
-    const handleChange = (e: unknown) => {
+    const handleChange = (e: Event) => {
       error.set('')
-      let nextVal = e
-      if (e instanceof Event)
-        if (e instanceof CustomEvent)
-          if (typeof e.detail === 'object' && e.detail !== null && 'value' in e.detail)
-            nextVal = e.detail.value
-          else nextVal = e.detail
-        else if (e.currentTarget instanceof HTMLInputElement)
-          if (e.currentTarget.type === 'checkbox') nextVal = e.currentTarget.checked
-          else nextVal = e.currentTarget.value
-        else if (
-          e.currentTarget instanceof HTMLSelectElement ||
-          e.currentTarget instanceof HTMLTextAreaElement
-        )
-          nextVal = e.currentTarget.value
+      let nextVal: string | boolean | number | null = null
+      if (!(e instanceof Event)) throw new Error(ErrorMessages.invalidEvent, { cause: e })
+
+      if (e.currentTarget instanceof HTMLInputElement)
+        if (e.currentTarget.type === 'checkbox') nextVal = e.currentTarget.checked
+        else nextVal = e.currentTarget.value
+      else if (
+        e.currentTarget instanceof HTMLSelectElement ||
+        e.currentTarget instanceof HTMLTextAreaElement
+      )
+        nextVal = e.currentTarget.value
+      else throw new Error(ErrorMessages.invalidEventTarget, { cause: e })
 
       try {
         nextVal = schema.parse(nextVal)

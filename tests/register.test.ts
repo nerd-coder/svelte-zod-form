@@ -1,41 +1,23 @@
 import { fireEvent, render } from '@testing-library/svelte'
 import { userEvent } from '@testing-library/user-event'
 
-import Example3 from '../src/routes/example3/+page.svelte'
+import RegisterPage from '../src/routes/register/+page.svelte'
+import { getElement } from './test-utils.ts'
 
 const user = userEvent.setup()
 let container: HTMLElement
 
 beforeEach(() => {
-  const { container: renderedContainer } = render(Example3)
+  const { container: renderedContainer } = render(RegisterPage)
   container = renderedContainer
 })
 
-function getElements(container: HTMLElement) {
-  const formElement = container.querySelector('form')
-  expect(formElement).not.toBeNull()
-  if (!formElement) throw new Error('form element not found')
-
-  const emailInput = formElement.querySelector('input[name="email"]')
-  expect(emailInput).not.toBeNull()
-  if (!emailInput || !(emailInput instanceof HTMLInputElement))
-    throw new Error('email input not found')
-
-  const passInput = formElement.querySelector('input[name="pass"]')
-  expect(passInput).not.toBeNull()
-  if (!passInput || !(passInput instanceof HTMLInputElement))
-    throw new Error('pass input not found')
-
-  const submitBtn = formElement.querySelector('button[type=submit]')
-  expect(submitBtn).not.toBeNull()
-  if (!submitBtn || !(submitBtn instanceof HTMLButtonElement))
-    throw new Error('pass input not found')
-
-  return { formElement, emailInput, passInput, submitBtn }
-}
-
 test('should show valid and invalid', async () => {
-  const { emailInput, passInput, submitBtn } = getElements(container)
+  const formElement = getElement(container, 'form', HTMLFormElement)
+  const emailInput = getElement(formElement, 'input[name="email"]', HTMLInputElement)
+  const passInput = getElement(formElement, 'input[name="pass"]', HTMLInputElement)
+  const acceptCheckbox = getElement(formElement, 'input[name="acceptTerms"]', HTMLInputElement)
+  const submitBtn = getElement(formElement, 'button[type=submit]', HTMLButtonElement)
 
   expect(emailInput.classList.contains('valid')).toBe(false)
   expect(passInput.classList.contains('valid')).toBe(false)
@@ -72,6 +54,9 @@ test('should show valid and invalid', async () => {
 
   expect(passInput.classList.contains('invalid')).toBe(false)
   expect(passInput.classList.contains('valid')).toBe(true)
+
+  // tick the accept checkbox
+  await user.click(acceptCheckbox)
 
   // submit button should be enabled
   expect(submitBtn.disabled).toBe(false)

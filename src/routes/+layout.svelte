@@ -4,8 +4,9 @@
   const title = '🌵 Svelte Zod Form'
   const TABS = [
     { href: '/example1', title: 'Simple Form' },
-    { href: '/example2', title: 'Auto Submit' },
+    { href: '/auto-submit', title: 'Auto Submit' },
     { href: '/example3', title: 'Connector' },
+    { href: '/register', title: 'Register' },
   ]
 </script>
 
