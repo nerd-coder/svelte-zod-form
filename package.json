@@ -1,6 +1,6 @@
 {
   "name": "@nerd-coder/svelte-zod-form",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "Building forms with breeze, using Svelte + Zod",
   "type": "module",
   "packageManager": "pnpm@9.10.0",

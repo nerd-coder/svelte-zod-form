@@ -1,5 +1,7 @@
 
 
+## [1.5.0](https://github.com/nerd-coder/svelte-zod-form/compare/v1.4.3...v1.5.0) (2024-10-20)
+
 ## [1.4.3](https://github.com/nerd-coder/svelte-zod-form/compare/v1.4.2...v1.4.3) (2024-10-20)
 
 
