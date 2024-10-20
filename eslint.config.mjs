@@ -24,7 +24,7 @@ export default [
     languageOptions: { parserOptions: { parser: ts.parser } },
   },
   {
-    ignores: ['build/', '.svelte-kit/', 'dist/', 'node_modules/', 'pnpm-lock.yaml'],
+    ignores: ['build/', '.svelte-kit/', 'dist/', 'coverage/', 'node_modules/', 'pnpm-lock.yaml'],
   },
   {
     rules: {

@@ -1,6 +1,11 @@
 <script lang="ts">
   import { z } from 'zod'
-  import { connectInput, connectSubmit, ZodFormStore } from '@nerd-coder/svelte-zod-form'
+  import {
+    connectError,
+    connectInput,
+    connectSubmit,
+    ZodFormStore,
+  } from '@nerd-coder/svelte-zod-form'
   import { sleep } from '$lib/utils/sleep.ts'
 
   const loginSchema = z.object({
@@ -15,22 +20,18 @@
     },
   })
 
-  // We need pull the generated field store out, in order
-  // to use the Svelte's "auto subscription" feature "$"
-  const { email_error, email_touched, pass_error, pass_touched } = form.stores
-
   const { submitting, valid, model } = form
 </script>
 
 <form on:submit|preventDefault={form.triggerSubmit} on:reset={form.reset}>
   <fieldset>
     <input name="email" placeholder="Email" use:connectInput={form.fields.email} />
-    {#if $email_error && $email_touched}<p>{$email_error}</p>{/if}
+    <p use:connectError={form.fields.email}></p>
   </fieldset>
 
   <fieldset>
     <input name="pass" type="password" placeholder="Password" use:connectInput={form.fields.pass} />
-    {#if $pass_error && $pass_touched}<p>{$pass_error}</p>{/if}
+    <p use:connectError={form.fields.pass}></p>
   </fieldset>
 
   <button type="submit" use:connectSubmit={form}>

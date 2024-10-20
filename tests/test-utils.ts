@@ -1,6 +1,6 @@
 import { Window } from 'happy-dom'
 
-export function polyfillDOM() {
+export function polyfillDOM(): void {
   const window = new Window()
   const keys = [
     'self',

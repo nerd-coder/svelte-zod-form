@@ -1,9 +1,11 @@
 import { sveltekit } from '@sveltejs/kit/vite'
-import { defineConfig, type UserConfig } from 'vitest/config'
+import { defineConfig, type ViteUserConfig } from 'vitest/config'
+import { svelteTesting } from '@testing-library/svelte/vite'
 
-const config: UserConfig = defineConfig({
-  plugins: [sveltekit()],
+const config: ViteUserConfig = defineConfig({
+  plugins: [sveltekit(), svelteTesting()],
   test: {
+    environment: 'jsdom',
     coverage: {
       include: ['src/lib/**'],
       reporter: ['text', 'html', 'clover', 'json-summary', 'json'],
