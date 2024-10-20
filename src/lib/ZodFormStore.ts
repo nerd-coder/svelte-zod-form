@@ -13,14 +13,14 @@ export interface ZodFormStoreOptions<T> {
   /**
    * The initial value of fields in the form.
    */
-  initialValue?: Partial<T>
+  initialValue?: Partial<T> | undefined
   /**
    * Async callback to handle submission of the form.
    * Should return nothing, or an `string` contain error message
    */
   onSubmit?: (v: T) => Promise<void | string> | string | void
   /** Print debug messages */
-  debug?: boolean
+  debug?: boolean | undefined
 }
 
 /**
