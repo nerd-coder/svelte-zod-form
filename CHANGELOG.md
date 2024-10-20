@@ -1,5 +1,11 @@
 
 
+## [1.6.0](https://github.com/nerd-coder/svelte-zod-form/compare/v1.5.0...v1.6.0) (2024-10-20)
+
+### Features
+
+* make handleChange exclusive for input ([66b2257](https://github.com/nerd-coder/svelte-zod-form/commit/66b22575f7e50a2e6298a7897a824aa2d3244281))
+
 ## [1.5.0](https://github.com/nerd-coder/svelte-zod-form/compare/v1.4.3...v1.5.0) (2024-10-20)
 
 ## [1.4.3](https://github.com/nerd-coder/svelte-zod-form/compare/v1.4.2...v1.4.3) (2024-10-20)
