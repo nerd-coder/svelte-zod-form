@@ -1,8 +1,7 @@
-import { derived, get, writable, type Readable, type Unsubscriber } from 'svelte/store'
+import { derived, get, readonly, writable, type Readable, type Unsubscriber } from 'svelte/store'
 import { ZodEffects, ZodError, type z } from 'zod'
 
 import { ZodFieldStore } from './ZodFieldStore.js'
-import { toReadable } from './utils/toReadable.js'
 import { getErrorMessage } from './utils/getErrorMessage.js'
 import { debounce } from './utils/debounce.js'
 import { pick } from './utils/pick.js'
@@ -42,7 +41,7 @@ export class ZodFormStore<A extends z.ZodRawShape, O extends object> {
    */
   fields: { [K in Extract<keyof O, string>]: ZodFieldStore<K, A, O> }
 
-  /** Generated fields's stores */
+  /** Generated fields's stores, for easier access */
   // prettier-ignore
   stores: 
     & { [K in Extract<keyof O,string> as `${K}_value`  ]: ZodFieldStore<K,A,O>['value'  ] }
@@ -162,6 +161,9 @@ export class ZodFormStore<A extends z.ZodRawShape, O extends object> {
     }
 
     type FKey = keyof ZodFieldStore<Extract<keyof O, string>, A, O>
+    this.fields = Object.fromEntries(
+      fieldStores.map(z => [z.name, z])
+    ) as unknown as typeof this.fields
     const handlerFuncNames: Array<FKey> = [
       'updateValue',
       'setValue',
@@ -171,9 +173,6 @@ export class ZodFormStore<A extends z.ZodRawShape, O extends object> {
       'setError',
       'setTouched',
     ]
-    this.fields = Object.fromEntries(
-      fieldStores.map(z => [z.name, pick(z, handlerFuncNames)])
-    ) as unknown as typeof this.fields
     this.stores = Object.fromEntries(
       fieldStores.flatMap(fieldStore =>
         Object.keys(fieldStore)
@@ -186,8 +185,8 @@ export class ZodFormStore<A extends z.ZodRawShape, O extends object> {
     ) as typeof this.stores
     this.triggerSubmit = triggerSubmit
     this.reset = handleReset
-    this.submitting = toReadable(submitting)
-    this.error = toReadable(formError)
+    this.submitting = readonly(submitting)
+    this.error = readonly(formError)
     this.dirty = derived([dirty, ...fieldStores.map(a => a.dirty)], a => a.some(b => b))
     this.errors = derived([fieldErrors, formError], errors =>
       errors.flatMap(z => z).filter(Boolean)

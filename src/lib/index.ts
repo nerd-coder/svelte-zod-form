@@ -1,2 +1,6 @@
 export type { ZodFieldStore } from './ZodFieldStore.js'
 export { ZodFormStore, type ZodFormStoreOptions } from './ZodFormStore.js'
+export { connectError } from './connector/connectError.ts'
+export { connectInput } from './connector/connectInput.ts'
+export { connectSelect } from './connector/connectSelect.ts'
+export { connectSubmit } from './connector/connectSubmit.ts'

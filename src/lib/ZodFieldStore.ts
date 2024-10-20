@@ -1,7 +1,6 @@
-import { writable, type Readable, type Updater, derived } from 'svelte/store'
+import { writable, type Readable, type Updater, derived, readonly } from 'svelte/store'
 import type { z } from 'zod'
 
-import { toReadable } from './utils/toReadable.js'
 import { getErrorMessage } from './utils/getErrorMessage.js'
 
 /**
@@ -147,10 +146,10 @@ export class ZodFieldStore<K extends Extract<keyof O, string>, A extends z.ZodRa
     }
     this.name = name
     // Stores
-    this.value = toReadable(value)
-    this.touched = toReadable(touched)
-    this.dirty = toReadable(dirty)
-    this.error = toReadable(error)
+    this.value = readonly(value)
+    this.touched = readonly(touched)
+    this.dirty = readonly(dirty)
+    this.error = readonly(error)
     this.valid = derived(error, e => !e)
     // Handlers
     this.handleChange = handleChange

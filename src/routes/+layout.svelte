@@ -5,6 +5,7 @@
   const TABS = [
     { href: '/example1', title: 'Simple Form' },
     { href: '/example2', title: 'Auto Submit' },
+    { href: '/example3', title: 'Connector' },
   ]
 </script>
 
