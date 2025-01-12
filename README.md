@@ -9,6 +9,9 @@
 
 Building forms in Svelte with breeze, using [Zod](https://zod.dev/)
 
+> [!NOTE]
+> Currently upgrading to Svelte 5's Runes 🔥, stay tuned!
+
 ## Example
 
 [REPL: Simple login form](https://svelte.dev/repl/33ff009d317745a389663c61ab228538)
@@ -176,7 +179,7 @@ const form = new ZodFormStore(schema, {
 ## Features
 
 - Use Svelte native stores
-- Fast: only update what changed, and you only subscribe to what you need
+- Fine-grained reactivity (currently up to field level)
 - Validation using Zod (Peer dependencies)
 - TypeScript
 - Minimal [![bundle]][bundle-link]
